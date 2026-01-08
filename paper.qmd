@@ -12,10 +12,13 @@ format:
     number-sections: true
     code-fold: true
     linkcolor: darkorange
-abstract: "There has been an explosion in the use of survey experiments in political science and related disciplines. But oftentimes there is also concommitant confusion regarding what the goal of a survey experiment is. Focussing especially on conjoint survey experiments, I highlight three points of confusion and provide pointers to clarify the targets of inference. The first relates to the nature of the estimand: whether the experiment aims at a causal estimand, or rather uses causal inference techniques instrumentally to target a descriptive estimand. The goal has implications for the optimal design. The second relates to the use of controls and how inferences hinge critically not just on the distribution of values of controls but on which controls are included, to the point of making all but the most modest causal inferences  fraught. The third relates to the licence for common claims that survey experiments capture the effects of features of the world, rather than the effects of communications about possible states of the world. In the case of conjoint experiments, for instance, there is interest in understanding the effects of candidate *attributes* on vote shares, for isntance, rather than simply the effects of *signals* (within a bundle of signals) on reported preferences or hypothetical choices. I identify conditions that justify  this inference from micro to macro estimands, but they are extremely restrictive even when the experimental design closely mimics the features of target elections."    
+abstract: "There has been an explosion in the use of survey experiments in political science and related disciplines. But oftentimes there is also concomitant confusion regarding what the goal of a survey experiment is. Focusing especially on conjoint survey experiments, I highlight three points of confusion and provide pointers to clarify the targets of inference. The first relates to the nature of the estimand: whether the experiment aims at a causal estimand, or rather uses causal inference techniques instrumentally to target a descriptive estimand. The goal has implications for the optimal design. The second relates to the use of controls and how inferences hinge critically not just on the distribution of values of controls but on which controls are included, to the point of making all but the most modest causal inferences fraught. The third relates to the license for common claims that survey experiments capture the effects of features of the world, rather than the effects of communications about possible states of the world. In the case of conjoint experiments, for instance, there is interest in understanding the effects of candidate *attributes* on vote shares, for instance, rather than simply the effects of *signals* (within a bundle of signals) on reported preferences or hypothetical choices. I identify conditions that justify this inference from micro to macro estimands, but they are extremely restrictive even when the experimental design closely mimics the features of target elections."    
 ---
 
-```{r setup, include = FALSE}
+```{r}
+#| label: setup
+#| include: false
+
 library(CausalQueries)
 library(tidyverse)
 library(DeclareDesign)
@@ -33,23 +36,22 @@ plot2 <- function(...) plot_model(..., nodecol = "white", textcol = "black")
 
 # Introduction
 
-There has been an explosion in the use of survey experiments in political science. By some accounts, survey experiments are now the most common research design in political science [@Torreblanca2025]. Some see survey experiments as  providing a method for identifying causal effects that are otherwise hard to identify. As described in one account, researchers are "side-stepping the endogeneity and collinearity concerns that threaten our ability to draw causal inferences using observational data" [@kertzer2021observers].
+There has been an explosion in the use of survey experiments in political science. By some accounts, survey experiments are now the most common research design in political science [@Torreblanca2025]. Some see survey experiments as providing a method for identifying causal effects that are otherwise hard to identify. As described in one account, researchers are "side-stepping the endogeneity and collinearity concerns that threaten our ability to draw causal inferences using observational data" [@kertzer2021observers].
 
 There is a lot to like about survey experiments, but there is also a risk of confusion about what exactly they contribute. In this short note I highlight three risks of confusion that can arise with some usages of survey experiments.
 
 First, I highlight a confusion regarding the nature of the estimand that survey experiments target. Survey experiments can be used for either **causal inference** (estimating treatment effects) or **descriptive inference** (measuring properties/preferences).  But it can sometimes be confusing which of these two worthy goals is the goal in any given experiment. The confusion likely arises in part because very similar designs can be used for either purpose, and in part because survey experimentalists often describe estimands as effects of one kind or another, even if the ultimate inferential target is not an effect.  The distinction matters because different goals have implications for how you should set things up and how you should interpret results. For instance, if you are using a survey experiment for descriptive inference, there might be simpler and less noisy strategies available. 
 
-Second, I highlight a confusion regarding the role of controls in survey experimentation. For some sorts of survey experiments, such as conjoint experiments or vignette experiments researchers researchers control many factors at once. The motivation is often described as one of controlling for confounding, enhancing realism, or robustness to contexts. As described by @tomz2013public, for instance, varying other features lets them "distinguish the effect of democracy from potential confounders." This may seem curious since randomization, not control, generates independence. Controls play a different function in these experiments not ensuring unbiased estimates but substanitively altering the estimand. This is done in multiple ways. Often  researcher do not control just background conditions, but plausibly, also features that are "downstream" to treatments of interest, in a sense clarified below. This can fundamentally alter the interpretation of the estimand, making it inappropriate to pool across experiments using different control sets.  The disconnect arises in part because of a confusion between the ideal of randomizing a candidate's attribute and randomizing the signal received by a subject.  Although experiments might assign a feature randomly to a profile presented to a subject, this does not mean that respondents know or believe the feature to be exogeneous---which might be warranted in settings where attributes themselves are known to be randomized. Rather they might imagine it is informative about other features of a candidate. Thus we might learn that information about corruption, say, affects citizens beliefs about quality, but not learn that citizens believe that corruption does not affect quality.
-This feature is not unique to survey experiments, but can arise in other factorial designs also when one factor is "naturally" down stream from another.
+Second, I highlight a confusion regarding the role of controls in survey experimentation. For some sorts of survey experiments, such as conjoint experiments or vignette experiments, researchers control many factors at once. The motivation is often described as one of controlling for confounding, enhancing realism, or robustness to contexts. As described by @tomz2013public, for instance, varying other features lets them "distinguish the effect of democracy from potential confounders." This may seem curious since randomization, not control, generates independence. Controls play a different function in these experiments, not ensuring unbiased estimates but substantively altering the estimand. This is done in multiple ways. Often researchers do not control just background conditions, but plausibly, also features that are "downstream" to treatments of interest, in a sense clarified below. This can fundamentally alter the interpretation of the estimand, making it inappropriate to pool across experiments using different control sets. The disconnect arises in part because of a confusion between the ideal of randomizing a candidate's attribute and randomizing the signal received by a subject. Although experiments might assign a feature randomly to a profile presented to a subject, this does not mean that respondents know or believe the feature to be exogenous---which might be warranted in settings where attributes themselves are known to be randomized. Rather they might imagine it is informative about other features of a candidate. Thus we might learn that information about corruption, say, affects citizens' beliefs about quality, but not learn that citizens believe that corruption does not affect quality.
+This feature is not unique to survey experiments, but can arise in other factorial designs also when one factor is "naturally" downstream from another.
 
 Third, in those cases in which the purpose really is for causal inference, there is a risk of confusion regarding what is being manipulated and so which causal estimand is really being targeted. Ultimately in a survey experiment question wording or survey procedures is being manipulated, not features of the world. From such manipulations we might learn a lot about respondents, but this does not give license to extrapolate to the effects of features of the world except under very stringent conditions. This feature is not unique to survey experiments but arises also, for instance, in audit experiments.
 
-One summary of these concerns is that the promise of survey experiments has been exaggerated.  Another though is that the 
-The evergreen advice [@lundberg2021your] to *know your estimand!* seems especially important when using a survey experiment. 
+One summary of these concerns is that the promise of survey experiments has been exaggerated. Another though is that the evergreen advice [@lundberg2021your] to *know your estimand!* seems especially important when using a survey experiment. 
 
 # Descriptive and causal estimands
 
-Before surveying different types of survey experiment is is useful to clarify distinctions between causal estimands and descriptive estimands and between measurement and inference.^[See also [Ch 14](https://book.declaredesign.org/library/) in  @blair2023research which is structured around this distinction.] 
+Before surveying different types of survey experiment, it is useful to clarify distinctions between causal estimands and descriptive estimands and between measurement and inference.^[See also [Ch 14](https://book.declaredesign.org/library/) in @blair2023research which is structured around this distinction.] 
 
 ## Measurement, and causal inference, and descriptive inference
 
@@ -68,10 +70,17 @@ Why does this matter? Because it means that if you are interested in causal esti
 
 The distinction between descriptive and causal estimands is not always so sharp though. You might question whether all kinds of properties we might want to describe---preferences, loyalties, and so on---*really* exist and can be described in this sense, even in principle. And you might think that some seemingly describable properties are themselves causal quantities in disguise. For example you might think of preferences as a summary of the effects of options on choices. So you might think of a quantity such as "being a racist" both as a property that someone has and as a summary of how they react as a function of features of people they encounter. These can seem like interchangeable interpretations even if formally you can distinguish between them.
 
-As an analogy, we might think of immunity to a disease as a property that someone has, and want to figure out how many have this immunity. We might even be able to measure features that indicate the property (e.g. sickle cell disease for immunity to malaria). In that case we might want to think of this as a descriptive exercise, and even measure the property in a person. But we might also think of immunity as fundamentally about causal relations: that is, we are really asking about how a person would behave in different conditions. A bit more formally, one might imagine a world in which $X \rightarrow Y  \leftarrow A$ (all binary nodes) and functional equation $f : Y = XA$. Then $X$ causes $Y$ if and only if $A$ is present. One way of thinking of the problem is to learn about the causal relations captured by $f$, the other is to learn about $A$ --- the value of a node that captures a property that implies a reaction given a background model. In the case of preferences, the model is likely simple: if individuals rank an option highly they are more likely to select it. Thus, as shown in the figure below, preferences and features combine to form choices. By altering features and observing choices we learn about preferences.
+As an analogy, we might think of immunity to a disease as a property that someone has, and want to figure out how many have this immunity. We might even be able to measure features that indicate the property (e.g. sickle cell disease for immunity to malaria). In that case we might want to think of this as a descriptive exercise, and even measure the property in a person. But we might also think of immunity as fundamentally about causal relations: that is, we are really asking about how a person would behave in different conditions. A bit more formally, one might imagine a world in which $X \rightarrow Y  \leftarrow A$ (all binary nodes) and functional equation $f : Y = XA$. Then $X$ causes $Y$ if and only if $A$ is present. One way of thinking of the problem is to learn about the causal relations captured by $f$, the other is to learn about $A$ --- the value of a node that captures a property that implies a reaction given a background model. In the case of preferences, the model is likely simple: if individuals rank an option highly they are more likely to select it. Thus, as shown in @fig-prefs-features, preferences and features combine to form choices. By altering features and observing choices we learn about preferences.
 
 
-```{r, echo = FALSE, out.width = "80%", fig.width = 8, fig.height = 3, fig.align='center', fig.cap = "A model in which preferences and features jointly determine choices. Learning about the effect of features on choices lets you make inferences about preferences."}
+```{r}
+#| label: fig-prefs-features
+#| echo: false
+#| fig-width: 8
+#| fig-height: 3
+#| fig-align: center
+#| fig-cap: "A model in which preferences and features jointly determine choices. Learning about the effect of features on choices lets you make inferences about preferences."
+
 make_model("Features -> Choices <- Preferences") |> 
   plot2() + ggplot2::coord_cartesian(clip = "off")
 ```
@@ -80,7 +89,7 @@ I think three further arguments can often tip towards a property rather than an 
 
 Second, in many experiments there is no distinction between the unit and the bundle of treatment conditions: the treatments (features) in a conjoint are *constitutive* of the unit rather than acting upon it. Thus by "changing" a feature you are asking for evaluations on two different units (e.g. evaluation of a corrupt politician versus a clean  politician) and not altering a feature of a pre-defined unit (e.g. informing subjects that Jack is in fact corrupt). 
 
-Third the property interpretation might sometimes allow a clearer connection to theory and form a basis for broader inferences.  For a related discussion of causal and constitutive *explanations* see @ylikoski2013causal. For the key intuition imagine I asked why your bike is not working. If you say it's because it got hit by a bus, you are giving a causal account to explain the state it's in. If you say: because turning the peddles does not make the bike go forward, you are giving a causal account that redescribes the problem. If you say: because the wheels are missing, you are giving an account that depends on a property of the bike. You are telling me about the "causal capacity" of the bike.   
+Third, the property interpretation might sometimes allow a clearer connection to theory and form a basis for broader inferences. For a related discussion of causal and constitutive *explanations* see @ylikoski2013causal. For the key intuition, imagine I asked why your bike is not working. If you say it's because it got hit by a bus, you are giving a causal account to explain the state it's in. If you say: because turning the pedals does not make the bike go forward, you are giving a causal account that redescribes the problem. If you say: because the wheels are missing, you are giving an account that depends on a property of the bike. You are telling me about the "causal capacity" of the bike.   
 
 A weakness of course is the commitment to the idea that the property in question exists. Even a pragmatic commitment to the idea that preferences exist and have explanatory power can itself be reasonably challenged @slovic1995construction.
 
@@ -100,12 +109,13 @@ To fix ideas consider two relatively clear cases.
 
 For an  example of a survey experiment for **causal inference** consider an **information experiment**.  Information experiments are typically used for causal inference, not descriptive inference, whether or not they are delivered through a survey.  In some cases survey-delivered information experiments are almost indistinguishable from field experiments --- for instance if information is delivered in a way similar to treatments of interest and if outcomes are measured outside of the survey, through measures of subsequent behaviors. The key difficulty with embedding an information experiment in a survey is with respect to external validity---whether the effects of information delivered in this way are similar to effects of information delivered in the wild, and so lots of good work in this vein tries to address that head-on. 
 
-For an example of a survey experiment clearly used for for **descriptive inference**, consider the **randomized response** survey experiments. In randomized response experiment, people are randomly assigned to answer either a sensitive question or a non-sensitive question are typically used for descriptive inference [@blair2015design]. The goal is to estimate the prevalence of some property of subjects, such as whether people have engaged in illegal behavior. The randomization makes it possible to make inferences about the prevalence of the sensitive behavior while protecting individual privacy. Here the randomization is a tool to make measurement possible, not the focus of interest itself. There is a causal effect of the procedure on the answer, but the purpose is to make descriptive inferences about something else.  
+For an example of a survey experiment clearly used for **descriptive inference**, consider the **randomized response** survey experiments. In randomized response experiments, people are randomly assigned to answer either a sensitive question or a non-sensitive question and are typically used for descriptive inference [@blair2015design]. The goal is to estimate the prevalence of some property of subjects, such as whether people have engaged in illegal behavior. The randomization makes it possible to make inferences about the prevalence of the sensitive behavior while protecting individual privacy. Here the randomization is a tool to make measurement possible, not the focus of interest itself. There is a causal effect of the procedure on the answer, but the purpose is to make descriptive inferences about something else.  
 
-I think these two cases show a  sharp difference between the two goals. The purpose is not always so clear, however.  @tbl-survey-experiments summarizes distinct uses to which different types of survey experiment might be put, highlighting traps to avoid if attracted by this type of survey experiment
+I think these two cases show a sharp difference between the two goals. The purpose is not always so clear, however. @tbl-survey-experiments summarizes distinct uses to which different types of survey experiment might be put, highlighting traps to avoid if attracted by this type of survey experiment.
 
-```{r, echo = FALSE}
+```{r}
 #| label: tbl-survey-experiments
+#| echo: false
 #| tbl-cap: "Summary of different uses for survey experiments"
 
 
@@ -207,11 +217,11 @@ Framing experiments typically involve changing of question wording  to assess ho
 
 ### For descriptive inference
 
-@goldin2015framing (see also @goldin2020revealed) treat framing effects as more of a nuisance than a quantitiy of interest and seek methods to purge estimates of presumed stable quantities of interest from framing effects, identifying how using a framing experiment lets one pont identify quantities of interests specifically for subgroups who are unaffected by frames.
+@goldin2015framing (see also @goldin2020revealed) treat framing effects as more of a nuisance than a quantity of interest and seek methods to purge estimates of presumed stable quantities of interest from framing effects, identifying how using a framing experiment lets one point identify quantities of interest specifically for subgroups who are unaffected by frames.
 
 ### For causal inference
 
-Many studies examining framing effects are specifically interested in causal quntities, specifically the effects of various types of triggers on the ways people think about issues. The basic example of a loss verseus gains framing described in @druckman2001implications is naturally thought of as a causal effect on preferences over a given set of alternatives: the frame affects how one thinks.   Thus @sniderman1993scar for instance assess how presenting a redistributive frame (affirmative action) affects the expression of racial animosity.^[@sniderman1993scar in fact write that the mention of affirmative action would encourage a dislike of blacks, which presupposes that racial preferences themselves,  rather than the expressionof preferences, are affected.]
+Many studies examining framing effects are specifically interested in causal quantities, specifically the effects of various types of triggers on the ways people think about issues. The basic example of a loss versus gains framing described in @druckman2001implications is naturally thought of as a causal effect on preferences over a given set of alternatives: the frame affects how one thinks. Thus @sniderman1993scar, for instance, assess how presenting a redistributive frame (affirmative action) affects the expression of racial animosity.^[@sniderman1993scar in fact write that the mention of affirmative action would encourage a dislike of blacks, which presupposes that racial preferences themselves, rather than the expression of preferences, are affected.]
 
 ## Conjoints {#conjoints}
 
@@ -252,7 +262,7 @@ I think this is close to the sort of setting @bansak2023using have in mind (thou
 The risk above remains, however: the effect you are getting is the effect of the attribute signal on the list, not the average (total) effect of the attribute itself on the outcomes. For example you might find that a powerful candidate does well *given* different values of corruption (even for different distributions of corruption), but this does not give you the effect of power itself, since, after all, power corrupts. You might of course really be interested in effects like  this: the causal effect of the candidate's attribute itself, in the sense of imagining the effect of an intervention on a candidate (e.g. the effect of the candidate's wealth on their performance), rather than on the listing of a particular attribute value in a list of attributes. That's a quantity that the conjoint would struggle to identify (see [below](#translation)).
 
 
-[[In addition @ganter2023identification argues that with a descriptive goal in mind the researchers should not focus on the AMCE, which, he argues, is more suited to selection-process estimands. The intuition -- from  @ganter2023identification --- can be communicated with the example in which voters have a preference for women over men. This preference is fixed. However the advantage of being female disappears if in selection choices women are in fact paired with women and men with men. Thus gender may be irrelavant to the choice, given the options; be prominment in preferences. I address this point from a different angle later, suggesting that "preferences" in these context are often best conceived as menu dependent.]]
+[[In addition @ganter2023identification argues that with a descriptive goal in mind the researchers should not focus on the AMCE, which, he argues, is more suited to selection-process estimands. The intuition---from @ganter2023identification---can be communicated with the example in which voters have a preference for women over men. This preference is fixed. However the advantage of being female disappears if in selection choices women are in fact paired with women and men with men. Thus gender may be irrelevant to the choice, given the options; be prominent in preferences. I address this point from a different angle later, suggesting that "preferences" in these contexts are often best conceived as menu dependent.]]
 
 
 
@@ -260,7 +270,7 @@ The risk above remains, however: the effect you are getting is the effect of the
 
 Including controls in an experiment can be done for multiple purposes.
 
-To clarify terminology, we can think of controlling at the intervention stage: fixing experimental conditions or at the analysis stage, taking account of the feature when we estimate effects. The former is standard in lab experimental settings, but it also arises in field experimental settings when researchers use factorial designs. In survey experiments researchers can similarly introduce controls at both stages -- as part of their data strategy and part of their answer strategy. Note also that at the analysis stage researchers often use the term "controlling for" when referring to the introduction of "linear controls," for instance in a regression. More strictly however the term is used for the idea of completely conditioning on the factor -- examing effects at all possible values of the factor (given the assignment) and then determining an average effect.
+To clarify terminology, we can think of controlling at the intervention stage: fixing experimental conditions or at the analysis stage, taking account of the feature when we estimate effects. The former is standard in lab experimental settings, but it also arises in field experimental settings when researchers use factorial designs. In survey experiments researchers can similarly introduce controls at both stages---as part of their data strategy and part of their answer strategy. Note also that at the analysis stage researchers often use the term "controlling for" when referring to the introduction of "linear controls," for instance in a regression. More strictly however the term is used for the idea of completely conditioning on the factor---examining effects at all possible values of the factor (given the assignment) and then determining an average effect.
 
 @fisher1971design made three arguments for varying conditions at intervention stage [p106]: 
 
@@ -281,63 +291,66 @@ In a survey experiment introducing these controls at the analysis stage presuppo
 
 ## Addressing bias 
 
-Controls in survey experiments are sometimes described at helping address confounding. It is a somewhat curious claim since random assignment itself ought to remove confounding. 
+Controls in survey experiments are sometimes described as helping address confounding. It is a somewhat curious claim since random assignment itself ought to remove confounding. 
 
 Users worry about confounding however. @bell2018authoritarian write for instance that "By holding the military power of the target constant, we reduce the possibility of the respondents drawing inferences about the target’s level of military power from the democracy treatment, which is perhaps the most obvious potential confounder."  @tomz2013public also describe their concern about leaving out factors  "that could confound the relationship between shared democracy and public support for war."
  
 @dafoe2018information write "When IE [information equivalence] is violated, the effect of the manipulation need not correspond to the quantity of interest (the effect of beliefs about the focal attribute)" and "what unifies studies of epistemic effects is their goal of inducing different subjects to consider two alternative versions of a scenario, one in which the factor of interest is present and one in which it is absent, without affecting subjects’ background beliefs." But it surely does alter beliefs about the focal attribute which in turn operates through beliefs about other attributes.  
 
-If one is interested just in the effects of receiving information, given whatever you believe already, then the effect is identified just from random assignment. The types of confounding that the experiment addresses might include the joint assignment of treatments---for example whenever information is given about democracy, information is also provided about wealth (not simply "*inferences are made about wealth*"), or self-selection into treatment: subjects that are more supportive of a particular type of candidate are more likely to recieve one signal than another. Within the context of a survey question it is not obvious why these threats would arise in the first place; nevertheless randomization effectively deals with them. To be clear though we are not talking about the problem that in thre world the effect of democracy on alliances is confounded by trading relations. 
+If one is interested just in the effects of receiving information, given whatever you believe already, then the effect is identified just from random assignment. The types of confounding that the experiment addresses might include the joint assignment of treatments---for example whenever information is given about democracy, information is also provided about wealth (not simply "*inferences are made about wealth*"), or self-selection into treatment: subjects that are more supportive of a particular type of candidate are more likely to receive one signal than another. Within the context of a survey question it is not obvious why these threats would arise in the first place; nevertheless randomization effectively deals with them. To be clear though we are not talking about the problem that in the world the effect of democracy on alliances is confounded by trading relations. 
 
 
 
 
 @dafoe2018information's focus however is not on the effects of information about a factor, but rather about the effects of beliefs about the factor, which themselves  may be manipulated via manipulation of information, uncontaminated by effects working through beliefs of other factors.
 
-The dependence of the interpretation of average effects in a factorial experiment on the distribution of other conditions is well appreciated; just as important however is the dependence on which factors are included.  Although one might have a notion of fundamental preferences---what would be valued in a full information environment---is settings with imperfect information, preferences over options depedn critically on beliefs of unknown features of those options. 
+The dependence of the interpretation of average effects in a factorial experiment on the distribution of other conditions is well appreciated; just as important however is the dependence on which factors are included. Although one might have a notion of fundamental preferences---what would be valued in a full information environment---in settings with imperfect information, preferences over options depend critically on beliefs of unknown features of those options. 
 
 ## Reduce uncertainty?
 
-Commonly we think that one motivation for controlling third factors is to ensure tighter estimates of treatment effects. THis  is now always  compelling in the case of survey experiments where controlled variation in third factors may mean more  rataher than less variation.
+Commonly we think that one motivation for controlling third factors is to ensure tighter estimates of treatment effects. This is not always compelling in the case of survey experiments where controlled variation in third factors may mean more rather than less variation.
 
-Say in truth for all individuals $Y = X_1X_2$ where $X1$ and $X_2$ are beliefs about features of candidates and $Y$ is anevaluation. In the target application, $X_2$ has a known distribution, say 50% of the population of candidates is male and this is known to all individuals. We will assume that for any candidate profile subjects will always form beliefs about the features and that we are interested in the effects of these beliefs. Moreover beliefs about candidate profiles are fully determined by candidate descriptions if these exist. (These provisions are to meanigfully keep the estimand constant when we introduce new information about a candidate.)
+Say in truth for all individuals $Y = A_1A_2$ where $A_1$ and $A_2$ are beliefs about features of candidates and $Y$ is an evaluation. In the target application, $A_2$ has a known distribution, say 50% of the population of candidates is male and this is known to all individuals. We will assume that for any candidate profile subjects will always form beliefs about the features and that we are interested in the effects of these beliefs. Moreover beliefs about candidate profiles are fully determined by candidate descriptions if these exist. (These provisions are to meaningfully keep the estimand constant when we introduce new information about a candidate.)
 
-Given information about $X_1$ only, imagine all individuals form evaluations in line with expected utility:
- $\hat Y = \mathbb E[Y] = 0.5 \times X_1 + 0.5 \times 0$. Varying $X_1$ alone will allow perfect estimates of the average effect of beliefs $X_1$: 0.5 (individuals observing $X_1=1$ will report 0.5, individuals observing $X_1=0$ will report 0). There is no error. Say now that we vary $X_2$, presenting 0s and 1s each to half the subjects in a balanced manner. Then individuals observing $X_1=1$ will report 0 or 1 depending on $X_2$. In that case if we regress $Y$ on  $X_1$ on we will get the same answer but with less precision. If we include a linear control for $X_2$ we do better, but still worse than if we had not introduced variation in $X_2$ at all. If we use a saturated model (e.g. following @lin2013agnostic), we get back to where we started: effectively undoing at the analysis stage the noise that we generated by adding the control feature at the intervention stage.
+Given information about $A_1$ only, imagine all individuals form evaluations in line with expected utility:
+$\hat Y = \mathbb E[Y] = 0.5 \times A_1 + 0.5 \times 0$. Varying $A_1$ alone will allow perfect estimates of the average effect of beliefs $A_1$: 0.5 (individuals observing $A_1=1$ will report 0.5, individuals observing $A_1=0$ will report 0). There is no error. Say now that we vary $A_2$, presenting 0s and 1s each to half the subjects in a balanced manner. Then individuals observing $A_1=1$ will report 0 or 1 depending on $A_2$. In that case if we regress $Y$ on $A_1$ we will get the same answer but with less precision. If we include a linear control for $A_2$ we do better, but still worse than if we had not introduced variation in $A_2$ at all. If we use a saturated model (e.g. following @lin2013agnostic), we get back to where we started: effectively undoing at the analysis stage the noise that we generated by adding the control feature at the intervention stage.
 
 The key point is simply that in this setting, controlling features at the intervention stage does not necessarily reduce variance,  it can increase it. In a typical field experiment controlling a background feature is motivated by the idea that the background feature would take on natural values and vary in any case. But in a factorial experiment the candidates do not exist outside of the experiment; at best we have the beliefs  that individuals have and that they project onto these candidates. And these beliefs may not exhibit variation even if they are formed with respect to a supposed background distribution of features that does vary. Thus controlled variation  can induce variation in beliefs where none existed before. 
 
-This example hinges of course on the idea that at baseline, absent information on $X_2$, there is little variation in beliefs about $X_2$. If instead there was variation in beliefs then controlling beliefs and implementing a starutated regression would remove noise.    
+This example hinges of course on the idea that at baseline, absent information on $A_2$, there is little variation in beliefs about $A_2$. If instead there was variation in beliefs then controlling beliefs and implementing a saturated regression would remove noise.
 
-In that case however the interpretation of the estimand is a little more complicated. If we are interested, for isntance,  in the effect of providing information about $X_21$, absent information on $X_2$, then this effect will vary as a function of expectations of $X_2$, which we now believe also vary. Moreover an inference from the experiment where we control beliefs to effects for strata with different beliefs (e.g. .5) requires extrapolation of the form we did above when we assumed individuals act on expectations following the expected utility model.
+In that case however the interpretation of the estimand is a little more complicated. If we are interested, for instance, in the effect of providing information about $A_1$, absent information on $A_2$, then this effect will vary as a function of expectations of $A_2$, which we now believe also vary. Moreover an inference from the experiment where we control beliefs to effects for strata with different beliefs (e.g. .5) requires extrapolation of the form we did above when we assumed individuals act on expectations following the expected utility model.
 
-```{r, eval = FALSE,  echo = FALSE}
+```{r}
+#| label: code-variance-example
+#| eval: false
+#| echo: false
+
 k <- 5
 u = 0
 
 df <- fabricate(
   N = 4,
-  X1 = c(0,0,1,1),
-  X2 = c(0,1,0,1)) |>
+  A1 = c(0,0,1,1),
+  A2 = c(0,1,0,1)) |>
   uncount(k) 
 
 design <- declare_model(
   data = df,
   u_i = u*rnorm(N),
-  Ya = X1 * .5 + u_i,
-  Yb = X1*X2 + u_i
+  Ya = A1 * .5 + u_i,
+  Yb = A1*A2 + u_i
   ) +
   declare_inquiry(Q = .5) +
-  declare_estimator(label = "1 baseline", Ya ~ X1) +
-  declare_estimator(label = "2 simple", Yb ~ X1) +
-  declare_estimator(label = "3 linear_controls", Yb ~ X1 + X2) +
-  declare_estimator(label = "4 saturated", .method =lm_lin, Yb ~ X1, covariates = ~X2)
+  declare_estimator(label = "1 baseline", Ya ~ A1) +
+  declare_estimator(label = "2 simple", Yb ~ A1) +
+  declare_estimator(label = "3 linear_controls", Yb ~ A1 + A2) +
+  declare_estimator(label = "4 saturated", .method =lm_lin, Yb ~ A1, covariates = ~A2)
 
 sims = 2
 diagnosis <- diagnose_design(design, sims = sims,
                              diagnosands = select_diagnosands("bias", "mean_se", "power"))
 diagnosis
-
 ```
  
  
@@ -346,88 +359,95 @@ diagnosis
 ## Control dependent beliefs
 
 
-Imagine a world in which there are only three relevant features, $X_1, X_2, X_3$ that combine to generate evaluation $Y$ of a candidate according to the law:
+Imagine a world in which there are only three relevant features, $A_1, A_2, A_3$ that combine to generate evaluation $Y$ of a candidate according to the law:
 
 
 $$
-Y = X2 \times X3.
+Y = A_2 \times A_3.
 $$
 
-So $Y = 1$ if and only if $X_2 = 1$ and $X_3 = 1$; $X_1$ plays no rule in this law.
+So $Y = 1$ if and only if $A_2 = 1$ and $A_3 = 1$; $A_1$ plays no role in this law.
 
-Let us ask: would a subject prefer a candidate wit $X_1=1$ over a candidate with $X_1=0$? Or, equivalently: does $X_1$ affect preferences for a candidate?
+Let us ask: would a subject prefer a candidate with $A_1=1$ over a candidate with $A_1=0$? Or, equivalently: does $A_1$ affect preferences for a candidate?
 
-The answer might appear to be "no." Certainly, if a voter were informed about $X_2$ and $X_3$ they could figure out $Y$ and their assessment would not depend on $X_1$. So in a full information world the answer is no.
+The answer might appear to be "no." Certainly, if a voter were informed about $A_2$ and $A_3$ they could figure out $Y$ and their assessment would not depend on $A_1$. So in a full information world the answer is no.
 
-But what if they did not know $X_2$ or $X_3$? Well then, $X_1$ could matter, even though it is not part of the data generating process for $Y$,  because it could be informative for $X_2$ and $X_3$, which are.
+But what if they did not know $A_2$ or $A_3$? Well then, $A_1$ could matter, even though it is not part of the data generating process for $Y$,  because it could be informative for $A_2$ and $A_3$, which are.
 
-To illustrate, here is an example in which seeing $X_1=1$ increases beliefs about $Y$ by 0.25 compared to the case when $X_1=0$, when neither $X_2$ or $X_3$ is observed. But seeing  $X_1=1$ *decreases* beliefs about $Y$ by 0.25 compared to the case when $X_1=0$, when neither $X_2=1$ is observed but $X_3$ remains observed. The takeaway of course is that these are all correct: whether $X_1$ weighs positively or negatively or not at all in preferences depends entirely on what other information is available.
+To illustrate, here is an example in which seeing $A_1=1$ increases beliefs about $Y$ by 0.25 compared to the case when $A_1=0$, when neither $A_2$ or $A_3$ is observed. But seeing  $A_1=1$ *decreases* beliefs about $Y$ by 0.25 compared to the case when $A_1=0$, when neither $A_2=1$ is observed but $A_3$ remains observed. The takeaway of course is that these are all correct: whether $A_1$ weighs positively or negatively or not at all in preferences depends entirely on what other information is available.
 
-For the illustration imagine the following  joint distribution over $X_1, X_2$ and $X_3$:
+For the illustration imagine the following  joint distribution over $A_1, A_2$ and $A_3$:
 
-|                | $X_1=0$ | $X_1=1$ | 
+|                | $A_1=0$ | $A_1=1$ | 
 |---|---:|---:|
-| $X_2=0,\,X_3=0$ | $\frac{32}{16}$ | $\frac{8}{16}$ | 
-| $X_2=0,\,X_3=1$ | $\frac{27}{16}$ | $\frac{9}{16}$ | 
-| $X_2=1,\,X_3=0$ | $\frac{2}{16}$ | $\frac{18}{16}$ | 
-| $X_2=1,\,X_3=1$ | $\frac{6}{16}$ | $\frac{18}{16}$ | 
+| $A_2=0,\,A_3=0$ | $\frac{32}{16}$ | $\frac{8}{16}$ | 
+| $A_2=0,\,A_3=1$ | $\frac{27}{16}$ | $\frac{9}{16}$ | 
+| $A_2=1,\,A_3=0$ | $\frac{2}{16}$ | $\frac{18}{16}$ | 
+| $A_2=1,\,A_3=1$ | $\frac{6}{16}$ | $\frac{18}{16}$ | 
 | Total | $\frac{12}{16}$ | $\frac{4}{16}$ | $1$ |
 
 
-Then, recalling that $\Pr(Y=1) = \Pr(X_2=1 \& X_3=1)$ it is easy to check that:
+Then, recalling that $\Pr(Y=1) = \Pr(A_2=1 \& A_3=1)$ it is easy to check that:
 
-1. $\Pr(Y=1 | X_1=1) - \Pr(Y=1 | X_1=0) = \frac12 - \frac14 = 0.25$
-2. $\Pr(Y=1 | X_1=1 \& X_2=1) - \Pr(Y=1 | X_1=0 \& X_2=1) = \frac12 - \frac34 = -0.25$
-3. $\Pr(Y=1 | X_1=1 \& X_2=1\& X_3=1) - \Pr(Y=1 | X_1=0 \& X_2=1\& X_3=1) = 0$.
+1. $\Pr(Y=1 | A_1=1) - \Pr(Y=1 | A_1=0) = \frac12 - \frac14 = 0.25$
+2. $\Pr(Y=1 | A_1=1 \& A_2=1) - \Pr(Y=1 | A_1=0 \& A_2=1) = \frac12 - \frac34 = -0.25$
+3. $\Pr(Y=1 | A_1=1 \& A_2=1\& A_3=1) - \Pr(Y=1 | A_1=0 \& A_2=1\& A_3=1) = 0$.
 
-The example makes clear that unless we are accessing some form of full information benchmark, the estimand--- "effect" of features on preferences---can be zero, positive, or negative. It depends on what other information is available to individuals, and of course subjects beliefs about the informativeness of one signal about another. By the same token *pooled* estimates of effects across studies will depend critically on the dsitribution of which factors are controlled across different studies. 
+The example makes clear that unless we are accessing some form of full information benchmark, the estimand---"effect" of features on preferences---can be zero, positive, or negative. It depends on what other information is available to individuals, and of course subjects' beliefs about the informativeness of one signal about another. By the same token *pooled* estimates of effects across studies will depend critically on the distribution of which factors are controlled across different studies. 
 
 A key implication is that the decision whether to include a control in this context then should plausibly be driven not by confounding concerns, but *on whether the information is likely available to the candidate in target applications of interest*. The question really: what is the effect of some new information given some prior information set.  @kirkland2018candidate's study exemplifies the logic nicely: effects of features when partisan information is available are weaker than that when partisan information is not available. Neither set of effects is wrong, necessarily. But one---that with information---may be closer to the target real world estimands.
 
 ## Controlled direct effects and taste-based discrimination
 
-A particular usage of controls to identify a discriminatory behavior, in particular to assess how judgements depend on one attribute -- race, gender, for instance---while specifically controlling for other features that are plausibly associated with teh attribute, at least in the minds of subjects.
+A particular usage of controls to identify a discriminatory behavior, in particular to assess how judgments depend on one attribute---race, gender, for instance---while specifically controlling for other features that are plausibly associated with the attribute, at least in the minds of subjects.
 
 @boittin2024evidence suggest that discrimination *after* controlling for criminality suggests taste based discrimination (though they consider other possibilities also). @ono2019contingent argue that controlling for other features lets them assess taste based discrimination.  @olinger2024americans make a similar argument for their study of doctor selection as a function of race.
 
-This is a productive use of controls where the goal is to block off a set of channels through which a signal operates. 
+This is a productive use of controls where the goal is to block off a set of channels through which a signal operates, as illustrated in @fig-idg and @fig-idg2.
 
-@fig:idg
+```{r}
+#| label: fig-idg
+#| echo: false
+#| fig-width: 10
+#| out-width: 80%
+#| fig-align: center
+#| fig-cap: "Models showing how identity signals affect attitudes through different pathways."
 
-```{r fig:idg, echo = FALSE, fig.width=10, out.width = "80%", fig.align = 'center'}
 model1 <- make_model("identity -> skills -> attitude <- identity")
 model2 <- make_model("identity <-> skills; skills -> attitude <- identity")
-model3 <- make_model("ideentitysignal -> inferences -> attitude <- ideentitysignal")
+model3 <- make_model("identitysignal -> inferences -> attitude <- identitysignal")
 
 ggpubr::ggarrange(model1 |> plot2()+ 
   ggplot2::coord_cartesian(clip = "off") + boxed, 
                   model2  |> plot2(strength = -.5)+ 
   ggplot2::coord_cartesian(clip = "off") +  boxed)
-
 ```
 
-In the real world  causal process the attributes may or may not be post treatment with respect to identity, but in the beliefs model they are  post treatment (model 3). However if they are exogeneously controlled by the experimenter, we can estimate the controlled direct effect of the identity cue. 
+In the real world causal process the attributes may or may not be post treatment with respect to identity, but in the beliefs model they are post treatment (model 3 in @fig-idg). However if they are exogenously controlled by the experimenter, we can estimate the controlled direct effect of the identity cue, as shown in @fig-idg2.
 
+```{r}
+#| label: fig-idg2
+#| echo: false
+#| fig-width: 9
+#| out-width: 80%
+#| fig-align: center
+#| fig-cap: "Model showing how identity signals affect attitudes through inferences."
 
-```{r fig:idg2, echo = FALSE, fig.width=9, out.width = "80%", fig.align = 'center'}
 model3  |> 
   plot2(labels = c("Identity\nsignal", "Inferences", "Attitude")) + 
-  ggplot2::coord_cartesian(clip = "off") 
-
+  ggplot2::coord_cartesian(clip = "off")
 ```
 
 
 Two subtleties:
 
-* Controlling may produce a controlled direct effect, is this a a more natural quantity than the natural direct effect? Yes, in particular sense: it does capture preferences but not behavior in the following sense. The natural direct effect captures a situation where there are beliefs about what skills they would they expect if they thought the candidate were a man; upon learning the candidate were a woman, how would they evaluate teh candidate if they thought the candidate had the skills they associated with a man?
-Say now someone has the follow proclivities. They value someone if they are high skilled *or* if they are male. And otherwise do not value them. They also think that everyone is high skilled. For such a person  learning that someone is male or female never makes a difference---regardless of the actual distribution of skills in the world. THe natural direct effect of gender is 0. However the controlled direct effect of gender is 1 conditional on low skill and 0 otherwise. 
+* Controlling may produce a controlled direct effect. Is this a more natural quantity than the natural direct effect? Yes, in a particular sense: it does capture preferences but not behavior in the following sense. The natural direct effect captures a situation where there are beliefs about what skills they would expect if they thought the candidate were a man; upon learning the candidate were a woman, how would they evaluate the candidate if they thought the candidate had the skills they associated with a man?
+Say now someone has the following proclivities. They value someone if they are high skilled *or* if they are male. And otherwise do not value them. They also think that everyone is high skilled. For such a person learning that someone is male or female never makes a difference---regardless of the actual distribution of skills in the world. The natural direct effect of gender is 0. However the controlled direct effect of gender is 1 conditional on low skill and 0 otherwise.
 
-Controlling you are conditioning on uniform, as highlighted by others, but would need to base it on the distribution of *beliefs* --- not the distribution of attributes. 
+Controlling you are conditioning on uniform, as highlighted by others, but would need to base it on the distribution of *beliefs*---not the distribution of attributes.
 
-
-
-* The meaning of the estimand depends crucially on what attributes get controlled for. Indeed if we imagine that "taste" effects work thorugh particular channels: disgust, affection, beliefs about integrity or piousness --- then controlling for these effects woudl remove direct effects entirely.
-A Heisenberg principle. We cannot both emasure and understand direct effects.
+* The meaning of the estimand depends crucially on what attributes get controlled for. Indeed if we imagine that "taste" effects work through particular channels: disgust, affection, beliefs about integrity or piousness---then controlling for these effects would remove direct effects entirely.
+A Heisenberg principle. We cannot both measure and understand direct effects.
 
 
 General claims such as "Americans do not select their doctors based on race" @olinger2024americans are misleading if one has controlled away various effects of the attribute (or of the signal of the attribute).
@@ -437,7 +457,7 @@ General claims such as "Americans do not select their doctors based on race" @ol
 
 General idea that including more factors increases control; see for instance the discussion of "full profile" strategies in @green1978conjoint.
 
-The key idea here is that although a feature might be randomized in the presentation of a description of a candidate, that does not mean that the feature is exogeneous with respects to other attributes that respondents project onto imagined  candidates. For example if I tell you that a candidate is criminal you might infer that they are male.  This inference might blocked if I also report the candidate's gender, but inferences to features that are not included are not blocked. In that sense randomization of signals about candidates does not do the same work as randomization of attributes themselves. In this setting, following the logic of "$M$-bias"---that can arise for treatments that are not randomily assigned--- it is even possible that biases enter *because* you  control for additional features.
+The key idea here is that although a feature might be randomized in the presentation of a description of a candidate, that does not mean that the feature is exogenous with respect to other attributes that respondents project onto imagined candidates. For example if I tell you that a candidate is criminal you might infer that they are male. This inference might be blocked if I also report the candidate's gender, but inferences to features that are not included are not blocked. In that sense randomization of signals about candidates does not do the same work as randomization of attributes themselves. In this setting, following the logic of "$M$-bias"---that can arise for treatments that are not randomly assigned---it is even possible that biases enter *because* you control for additional features.
 
 ### $M$-bias illustration
 
@@ -463,9 +483,16 @@ There is a causal effect on beliefs: changing the information about privilege ch
 Although attributes are randomized in the presentation of profiles, *respondents do not believe they are random* for candidates in their modental models of the world.
 Instead, they reason causally about how politicians acquire wealth. In particular, respondents posit a latent trait, ability, that can combine with privilege to produce wealth.
 
-Represented as a DAG their mental causal model is as in teh top panel of @fig:mental:
+Represented as a DAG their mental causal model is as in the top panel of @fig-mental:
 
-```{r fig:mental, echo = FALSE, fig.width=12, fig.height = 12, out.width = "80%", fig.align = 'center', fig.cap = "Collider bias can render a *signal* of a feature relevant to assessments even though--in the individual's mental model of the world---the feature itself does not affect assessments."}
+```{r}
+#| label: fig-mental
+#| echo: false
+#| fig-width: 12
+#| fig-height: 12
+#| out-width: 80%
+#| fig-align: center
+#| fig-cap: "Collider bias can render a *signal* of a feature relevant to assessments even though---in the individual's mental model of the world---the feature itself does not affect assessments."
 model1 <- make_model("Privilege -> Wealth <- Ability -> Quality") 
 model2 <- make_model("PrivilegeI -> AbilityB; WealthI -> AbilityB -> QualityB") 
 
@@ -498,10 +525,10 @@ The distributions of nodes they expect to see are as in the table below.
 | 1  | 1  | 1  | 1  |
 | 1  | 1  | 1  | 1  |
 
-We can see citizens do not think that wealth causes quality, but it is absolutely *informative* about quality, since it suggests ability. Privilge however is not (absent information on welath) informative about quality at all: it neither has an effect nor carries informaiton. 
+We can see citizens do not think that wealth causes quality, but it is absolutely *informative* about quality, since it suggests ability. Privilege however is not (absent information on wealth) informative about quality at all: it neither has an effect nor carries information. 
 
 Privilege and ability are distributed independently.
-Ability predicts wealth prefectly. 
+Ability predicts wealth perfectly. 
 Either privilege or ability can give rise to wealth, but they are jointly sufficient for wealth. If each of these four data types are equally likely we have the following inferences about Y:
 
 $$\Pr(Y=1 | P =1, W =1 ) = \frac23 < 1 = \Pr(Y=1 | P =0, W =1 )$$
@@ -529,7 +556,7 @@ In the same way, there is a risk of misreading @bansak2023using's claim that the
 
 Can one move between one type of statement and the other? 
 
-This is an interesting example of a "micro-macro linkage" problem [@humphreys2020aggregation]. The returned vote share for a candidate is a macro quantity, possibly affected by the attributes of a candidate. But it is generated from the individual preferences of a multidude of voters, each based (at least in part) on the information they have, which is likely itself a function of candidate attributes. Indeed this seems like it should be a particularly simple micro-macro linkages problems since there is a well defined aggregation rule that one should be able to plug in to make the link.
+This is an interesting example of a "micro-macro linkage" problem [@humphreys2020aggregation]. The returned vote share for a candidate is a macro quantity, possibly affected by the attributes of a candidate. But it is generated from the individual preferences of a multitude of voters, each based (at least in part) on the information they have, which is likely itself a function of candidate attributes. Indeed this seems like it should be a particularly simple micro-macro linkage problem since there is a well defined aggregation rule that one should be able to plug in to make the link.
 
 In the remaining discussion I suggest that even under optimistic conditions this might be hard. I point to multiple hurdles. One of these is particularly important however: when there are multiple attributes, an exogenous change in one may result in an endogenous change in another. Conjoints are used to deliver a kind of controlled effect---controlling not just for confounds but also for the causal pathways along which treatment effects might naturally operate.  Controlled effects may not depend on causal relations between attributes, but the effect of a single treatment, as usually understood, absolutely can.^[To avoid confusion, the issue is not about the joint distribution of attributes, but about the *underlying causal structure* relating attributes to one another and to voter utilities.]
 
@@ -537,20 +564,18 @@ In the remaining discussion I suggest that even under optimistic conditions this
 
 Imagine a "target" setting in which we have an actual election with a large set of potential candidates in two candidate elections who are defined by a finite set of attributes. Imagine we also have a conjoint experiment that closely parallels the setting. 
 
-In particular, survey participants  are representative of voters, the  set of attributes of candidates that matters to voters is known and signals about this  set os presented to survey participants, who  react to the signals provided in the survey in the same way as they would do as voters to the infomration on attributes of candidates in the election. 
+In particular, survey participants are representative of voters, the set of attributes of candidates that matters to voters is known and signals about this set are presented to survey participants, who react to the signals provided in the survey in the same way as they would do as voters to the information on attributes of candidates in the election. 
 
-Can we learn about the effect of the attribute on vote choice from the conjoint? More specifically we will ask whether the AMCE of the signal of attribute (for example, a gender signal) can correspond to the ATE of that attribute on votes in an  election, where both the AMCE and the ATE are defined with respect to the same population of voters and the population of potential candidates (so to be clear we are not focused on the effect of gender of vote shares given the actual candidates running in a race, but the expected effect across races that might have been run).^[The exercise is related to  @bansak2023using's interest in settings with the "election matching the specifications of the conjoint," though  they do not, have an external estimand in mind. They are not  attempting to map to the effect of a real candidate's actual attributes on actual vote shares and their Proposition 2 does not seek to show an equivalence between two different estimands.] 
+Can we learn about the effect of the attribute on vote choice from the conjoint? More specifically we will ask whether the AMCE of the signal of attribute (for example, a gender signal) can correspond to the ATE of that attribute on votes in an election, where both the AMCE and the ATE are defined with respect to the same population of voters and the population of potential candidates (so to be clear we are not focused on the effect of gender on vote shares given the actual candidates running in a race, but the expected effect across races that might have been run).^[The exercise is related to @bansak2023using's interest in settings with the "election matching the specifications of the conjoint," though they do not have an external estimand in mind. They are not attempting to map to the effect of a real candidate's actual attributes on actual vote shares and their Proposition 2 does not seek to show an equivalence between two different estimands.] 
 
 
 We make the connection by assuming that signals about attributes $(s)$ in the world are possible functions of attributes $(a)$; that voters preferences over candidates, $(Y)$  depend on the signals they receive about candidates; and that preferences in turn translate into votes $(V)$.
 
-### Structure
-
-Consider an election between candidates $j$ and $k$ in context $u$. Context $u$ induces a set of attributes for candidates---as measured at election time, with $a$ denoting a vector of all attributes for both candidates.  
+Specifically, consider an election between candidates $j$ and $k$ in context $u$. Context $u$ induces a set of attributes for candidates---as measured at election time, with $a$ denoting a vector of all attributes for both candidates.  
 
 Let us say that the vote share received by a candidate depends only on the attributes of the two candidates: $v_j(a)$.
 
-We are interested in the effect of a particular attribute of one candidate, which we take to be the first element of $a$, $a_1$, on the vote share of candidate 1 in context $u$. Let $v^u_0$ and $v^u_1$ denote the potential outcomes (vote shares) for candidate $1$ when attribute $a_1$ is set to 0 or 1, respectively. Let $y_i^u(s^i) \in \{0,1\}$ denote whether voter  $i$ prefers candidate 1 to candidate 2 given a vector of signals $s^i$ in context $u$.
+We are interested in the effect of a particular attribute of one candidate, which we take to be the first element of $a$, $a_1$, on the vote share of candidate 1 in context $u$. Let $v^u_0$ and $v^u_1$ denote the potential outcomes (vote shares) for candidate $1$ when attribute $a_1$ is set to 0 or 1, respectively. Let $y_i^u(s^i) \in \{0,1\}$ denote whether voter  $i$ prefers candidate 1 to candidate 2 given a vector of signals $s^i$ in context $u$. Let $a_{-1}(a_1, u)$ denote the potential values of other attributes following a notional intervention on attribute $a_1$ in context $u$. 
 
 ### The ATE
 
@@ -566,7 +591,7 @@ $$
 \beta^u \equiv v(1, a_{-1}(1, u), u) - v(0, a_{-1}(0, u), u),
 $$
 
-where $a^u_{-1}(z)$ denotes the potential outcomes of all other attributes when attribute $g$ is set to $z \in \{0,1\}$ in context $u$.
+where $a^u_{-1}(z)$ denotes the potential outcomes of all other attributes when attribute $a_1$ is set to $z \in \{0,1\}$ in context $u$.
 
 It is worth highlighting that we assume these potential outcomes are well defined. This presupposes that a change in attributes does not alter the fact that the election goes ahead with two candidates and produces votes for the two candidates (for example, one might imagine a counterfactual attribute under which one of the candidates has an authoritarian agenda).
 
@@ -599,21 +624,29 @@ $$
 \tau^u \equiv \mathbb E_\mu\!\left[y_i(1, s^i_{-1}(u), u) - y_i(0, s^i_{-1}(u), u)\right].
 $$
 
-If we are interested in the expectation of this treatment effect under a distribution of signals, themselves induced by the distribution of background conditions, we have:
+If we are interested in the expectation of this treatment effect under a distribution of signals, $f$, specified by the researcher, in a particular setting $u$, we have:
 
 $$
-\mathrm{AMCE} \equiv \mathbb E_h\!\left[\mathbb E_\mu\!\left[y_i(1, s^i_{-1}(u), u) - y_i(0, s^i_{-1}(u), u)\right]\right].
+\mathrm{AMCE}^{f,u} \equiv \mathbb E_f\!\left[\mathbb E_\mu\!\left[y_i(1, s^i_{-1}, u) - y_i(0, s^i_{-1}, u)\right]\right].
 $$
+
+
 
 A focus on AMCE rather than $\tau^s$ is appropriate when interest lies not only in the effect of an attribute under a given information environment (such as that induced by a particular experiment), but in the average effect across a range of possible informational settings. The distribution of signals here is as determined by $h$, which is what a researcher might attempt to replicate in an experiment. 
 
 
 
-Note that  $\tau^u$ and the AMCE here are  written as controlled effects. A "natural" version might be of the form:
+Note that  $\tau^u$ and the AMCE here are  written as controlled effects. Two other more  "natural" versions might be of the form:
 
 $$
-\mathrm{AMCE}^n \equiv \mathbb E_h\!\left[\mathbb E_\mu\!\left[y_i(1, s^i_{-1}(s^i_1=1, u), u) - y_i(0, s^i_{-1}(s^i_1=0, u), u)\right]\right].
+\mathrm{AMCE} \equiv \mathbb E_h\!\left[\mathbb E_\mu\!\left[y_i(1, s^i_{-1}(u), u) - y_i(0, s^i_{-1}(u), u)\right]\right].
 $$
+here the signals are again controlled, but at the levels they occur naturally at in the given context. 
+
+<!-- $$ -->
+<!-- \mathrm{AMCE}^n \equiv \mathbb E_h\!\left[\mathbb E_\mu\!\left[y_i(1, s^i_{-1}(s^i_1=1, u), u) - y_i(0, s^i_{-1}(s^i_1=0, u), u)\right]\right]. -->
+<!-- $$ -->
+<!-- here the signals are allowed to react to the intervention on attribute 1. -->
 
 However, if we think of  $s^i$ as denoting *background* features for an individual $i$ and with the usual exclusion restriction under which  an intervention on $s_1$ does not affect other background features, these are equivalent to the familiar unit level treatment effect $y_i(1) - y_i(0)$ (suppressing the background information) and similarly the ACME can be described with  the familiar expression  $\tau = \mathbb E[Y(1) - Y(0)]$, where we use $Y(.) \equiv y_i(.) \text{ with } i \sim \mu$ to denote the random potential outcome induced from sampling $i$ from $N$.   
 
@@ -628,7 +661,7 @@ $$
 
 Note the question is about the equivalence of estimands, not about whether either estimand can be effectively estimated. Proposition 1 below provides a positive answer under the following conditions. 
 
-1. **Causal autonomy of attributes.**  
+**A1. Causal autonomy of attributes.**  
    For all contexts $u$ and all $g$,
 
    $$
@@ -637,7 +670,7 @@ Note the question is about the equivalence of estimands, not about whether eithe
 
    *Note:* Intuitively, an intervention on an attribute does not causally affect other attributes. Attributes may of course be arbitrarily correlated with each other.
 
-2. **Sovereignty.**  
+**A2. Sovereignty.**  
    Vote shares are determined by votes only. Let $v_j(a)$ denote the vote share received by candidate $j$. Then
   $$
   v_j(a) = \mathbb E_\mu[v^j_i(a)].
@@ -645,50 +678,50 @@ Note the question is about the equivalence of estimands, not about whether eithe
   
    *Note:*  Implicitly, votes translate directly into vote shares. This is trivial if understood definitionally. However if $v$ is understood as the *reported* vote share then this may be considered a "no misreporting" condition. 
 
-3. **Sincere (rational, but nonstrategic) voting.**  
-   Let $y_i(a)$ indicate whether candidate $1$ is $i$’s preferred candidate given attribute vector $a$, and let $v_i(a)$ indicate whether $i$ votes for $j$. 
+**A3. Sincere (rational, but nonstrategic) voting.**  
+   Let $y_i(a)$ indicate whether candidate $1$ is $i$'s preferred candidate given attribute vector $a$, and let $v_i(a)$ indicate whether $i$ votes for $j$. 
   $$
   v_i(a) = y_i(a).
   $$ 
    *Note:*  Implicitly: voters do not abstain---regardless of $a$, they vote their top preferences. Rational but nonstrategic voting may sound a little oxymoronic, it  captures however the idea that they vote their top preferences but do not take into account any other considerations, such as the likely voting behavior of others.
 
-4. **Context irrelevance given attributes.**  
-  For all contexts $u$ and attribute vectors $a$,
+**A4. Context irrelevance given attributes.**  
+  For all contexts $u$ and attribute vectors $a$, for all $u, u'$:
   $$
-  y_i(a, u) = y_i(a).
+  y_i(a, u) = y_i(a, u').
   $$
    *Note:*  In particular features that give rise to different attributes---one might imagine, cultural features for instance---do not themselves determine preferences. 
    
-5. **Signals are complete mediators.**  
+**A5. Signals are complete mediators.**  
   For all individuals $i$,
   $$
   y_i(1, a_{-1}) - y_i(0, a_{-1}) = y_i(1, s^i_{-1}) - y_i(0, s^i_{-1}).
   $$
   
-  We typically might expect voters have fundamental preferences are over attributes and they use signals to infer attributes. As a simple example a utility maximizing voter would have:
+   We typically might expect voters have fundamental preferences are over attributes and they use signals to infer attributes. As a simple example a utility maximizing voter would have:
   
-  $$
-y_i =
-\begin{cases}
-1 & \text{if } \sum_a q^{ij}(a \mid s^i) u_i(a)
-      \ge \sum_a q^{ik}(a \mid s^i) u_i(a), \\
-0 & \text{otherwise}.
-\end{cases}
-  $$
+   $$
+   y_i =
+   \begin{cases}
+   1 & \text{if } \sum_a q^{ij}(a \mid s^i) u_i(a)
+         \ge \sum_a q^{ik}(a \mid s^i) u_i(a), \\
+   0 & \text{otherwise}.
+   \end{cases}
+   $$
   
-  where  $q^{i}(a|s^{i})$ denotes the  *probability distribution* that $i$ places over possible attribute vectors $a\in A$, given signal $s_i$.  
+   where  $q^{i}(a|s^{i})$ denotes the  *probability distribution* that $i$ places over possible attribute vectors $a\in A$, given signal $s_i$.  
   
-  Under this model this axiom might be satisfied if $s$ and $a$ have the same domain, and for all  attributes $s(a) = a$. In this case  Bayesian voters infer $a$ from $s(a)$ without error and
+   Under this model this axiom might be satisfied if $s$ and $a$ have the same domain, and for all  attributes $s(a) = a$. In this case  Bayesian voters infer $a$ from $s(a)$ without error and
   
-$$
-y_i =
-\begin{cases}
-1 & \text{if } u_i^j(a) \geq u_i^k(a), \\
-0 & \text{otherwise}.
-\end{cases}
-$$
+   $$
+   y_i =
+   \begin{cases}
+   1 & \text{if } u_i^j(a) \geq u_i^k(a), \\
+   0 & \text{otherwise}.
+   \end{cases}
+   $$
 
-6. **Aligned distributions.**  
+**A6. Aligned distributions.**  
 The distribution of signals induced by contexts corresponds to $f$:
 $$
 \mathbb E_h\!\left[\mathbb E_\mu[y_i(s^{u,i})]\right]
@@ -698,37 +731,43 @@ $$
 
 
 
-**Claim.** Given a population of voters $N = [0,1]$, if conditions 1–6 hold, then the expected effect of a change in an attribute over contexts on vote shares of candidate $j$ ($\beta$) equals the expected effect of a change in information about that attribute on expressed preferences, conditional on other information (AMCE).
+**Claim.** *Given a population of voters $N = [0,1]$, if conditions A1–A6 hold, then the expected effect of a change in an attribute over contexts on vote shares of a candidate  ($\beta$) equals the expected effect of a change in signals of that attribute on expressed preferences, conditional on other information (AMCE).*
 
+::: {.proof}
 We have a direct proof in six steps:
 
-
-\begin{align}
+\begin{align*}
 \beta
 &= \mathbb E_h\!\left[v^u(1, a^u_{-1}(1)) - v^u(0, a^u_{-1}(0))\right] \notag\\
 &= \mathbb E_h\!\left[v^u(1, a^u_{-1}) - v^u(0, a^u_{-1})\right]
-&& \text{(Causal autonomy of attributes)} \notag\\
+&& \text{(A1: Causal autonomy of attributes)} \notag\\
 &= \mathbb E_h\!\left[\mathbb E_\mu\!\left[v^u_i(1, a^u_{-1}) - v^u_i(0, a^u_{-1})\right]\right]
-&& \text{(Sovereignty)} \notag\\
+&& \text{(A2: Sovereignty)} \notag\\
 &= \mathbb E_h\!\left[\mathbb E_\mu\!\left[y^u_i(1, a^u_{-1}) - y^u_i(0, a^u_{-1})\right]\right]
-&& \text{(Rational non-strategic voting)} \notag\\
+&& \text{(A3: Rational non-strategic voting)} \notag\\
 &= \mathbb E_h\!\left[\mathbb E_\mu\!\left[y_i(1, a^u_{-1}) - y_i(0, a^u_{-1})\right]\right]
-&& \text{(Context irrelevance given attributes)} \notag\\
+&& \text{(A4: Context irrelevance given attributes)} \notag\\
 &= \mathbb E_h\!\left[\mathbb E_\mu\!\left[y_i(1, s^{u,i}_{-1}) - y_i(0, s^{u,i}_{-1})\right]\right]
-&& \text{(Signals are complete mediators)} \notag\\
+&& \text{(A5: Signals are complete mediators)} \notag\\
 &= \mathbb E_f\!\left[\mathbb E_\mu\!\left[y_i(1, s^i_{-1}) - y_i(0, s^i_{-1})\right]\right]
-&& \text{(Aligned distributions)} \notag\\
+&& \text{(A6: Aligned distributions)} \notag\\
 &= \mathrm{AMCE}.
-\end{align}
+\end{align*}
+:::
 
 
 
 
 ## Easy and hard cases
 
-For a positive answer consider a causal model like that shown in  @fig-simple.
+For an example of a structure under which equivalence might hold,  consider a causal model like that shown in @fig-simple.
 
-```{r fig-simple, echo = FALSE, fig.cap = "DAG showing relation between two features, $A_1$ and $A_2$, an unobservable feature $U$, two *signals* about these observable  features $s_{1}$ and $s_{2}$, respondent *beliefs* about these features $\\mu_{1}$ and $\\mu_{2}$,  and a respondent level (relative) evaluation, $Y$, and a vote choice. A survey experimentalist intervenes on $s_{1}$ and $s_{2}$. Can they make inferences about the effect of $A_1$ and $A_2$ on $V$? Left model shows a promising case. Right model highlights a set of threats.", fig.height = 8, fig.width = 10}
+```{r}
+#| label: fig-simple
+#| echo: false
+#| fig-width: 10
+#| fig-height: 8
+#| fig-cap: "DAG showing relation between two features, $A_1$ and $A_2$, an unobservable feature $U$, two *signals* about these observable features $s_{1}$ and $s_{2}$, respondent *beliefs* about these features $\\mu_{1}$ and $\\mu_{2}$, and a respondent level (relative) evaluation, $Y$, and a vote choice. A survey experimentalist intervenes on $s_{1}$ and $s_{2}$. Can they make inferences about the effect of $A_1$ and $A_2$ on $V$? Left model shows a promising case. Right model highlights a set of threats."
 
 
 labs <- c("U", "A[1]",  "A[2]", 
@@ -782,14 +821,12 @@ plot2(model2,
 ```
 
 
-The assumed structure on left is a very simple one. The candidate attributes are confounded: that is that there is an unobserved feature $U$ that simultaneously affects the two attributes $A_1$ and $A_2$. 
-
-We imagine that signals are produced only by the features they signal. Beliefs are a function only of signals.  Beliefs about attributes---and only these---are what determines evaluations (say relative to some comparison candidate), and evaluations---and only evaluations---give rise to actual vote choices.
+The assumed structure on left is a very simple one. The candidate attributes are confounded: that is that there is an unobserved feature $U$ that simultaneously affects the two attributes $A_1$ and $A_2$.  However, we imagine that signals are produced only by the features they signal. Beliefs are a function only of signals.  Beliefs about attributes---and only these---are what determines evaluations (say relative to some comparison candidate), and evaluations---and only evaluations---give rise to actual vote choices.
 
 From this graph one can see that the confounding means that one cannot assess the effect of $A_1$ or $A_2$ on $V$ by looking at simple differences in means, since in each case there is a backdoor path to $V$ via $U$. Randomizing $A_1$ and $V$ is not possible.  Conditioning on attributes would work however but only if we had information on *all* attributes that open backdoor pathways.
 
 
-Imagine now that we can control attribute signals; meaning that we can produce *the same signals about candidate features that  voters would obtain in the wild* (in the terminology used in @barabas2010survey we can deliver the "natural treatment" -- the signal as it woudl be provided in the world).
+Imagine now that we can control attribute signals; meaning that we can produce *the same signals about candidate features that voters would obtain in the wild* (in the terminology used in @barabas2010survey we can deliver the "natural treatment"---the signal as it would be provided in the world).
 
 Consider now three threats to these inferences. 
 
@@ -827,7 +864,7 @@ Finally it is easy to see that attributes can have effects on behavior that aris
 
 To illustrate the effects of a violation of A1, let's assume that A2 - A6 hold. In addition lets optimistically assume both of two attributes for two candidates are observed, all voters have identical preferences (this simplifies the estimand and makes it clearer what variation is doing work), and we know not only the joint distribution of attributes and the average effects of all attributes on each other, but also the underlying response functions giving rise to these average effects (this simplifies calculations of the ATE)
 
-Now imagine two worlds, similar to the simple model in Figure XX. They differ in that in one world $A_1$ causes $A_2$ and in the other $A_2$ causes $A_1$. All nodes binary.
+Now imagine two worlds, similar to the simple model in @fig-simple. They differ in that in one world $A_1$ causes $A_2$ and in the other $A_2$ causes $A_1$. All nodes binary.
 
 Let's assume that these two worlds can have *exactly the same observed joint distribution* of candidate attributes. For example, say in both worlds the correlation structure is:
 
@@ -843,8 +880,7 @@ $$
 
 However, in **World 1**, intervening on $A_1$ induces changes in $A_2$; in **World 2**, it does not (whereas in a conjoint experiment, when we alter $A_1$ in a profile description, we do *not* induce changes in $A_2$, even if $A_1$ and $A_2$ are correlated in the population).
 
-Specifically we will assume that in world 1 $A_2(A_1) = A_1$ for 60% of units; for 20%, $A_2 = 0$ regardless of $A_1$ and for the remaining 20%, $A_2 = 1$ regardless of $A_1$. Similarly for World 2, 
-  $A_1(A_2) = A_2$ for 60% of units; for 20%, $A_1 = 0$ regardless of $A_2$ and for the remaining 20%, $A_1 = 2$ regardless of $A_1$. In World 1 it is easy to see that the  effect of $A_1$ on $Y$ arises not just because of the effect of $A_1$ on beliefs about $A_1$ but because of the effects of $A_1$ on $A_2$ and beliefs about $A_2$. 
+Specifically we will assume that in world 1 $A_2(A_1) = A_1$ for 60% of units; for 20%, $A_2 = 0$ regardless of $A_1$ and for the remaining 20%, $A_2 = 1$ regardless of $A_1$. Similarly for World 2, $A_1(A_2) = A_2$ for 60% of units; for 20%, $A_1 = 0$ regardless of $A_2$ and for the remaining 20%, $A_1 = 1$ regardless of $A_2$. In World 1 it is easy to see that the effect of $A_1$ on $Y$ arises not just because of the effect of $A_1$ on beliefs about $A_1$ but because of the effects of $A_1$ on $A_2$ and beliefs about $A_2$. 
 
 Imagine that everyone has very simple preferences across candidates:
 
@@ -855,7 +891,7 @@ $$
 So voters ignore $A_1$ entirely. Given two sets of attributes $(A_1, A_2)$ and $(A_1', A_2')$, the choice 
 
 $$
-Y\big((A_1, A_2), (A_1', A_2')\big)
+Y(A_1, A_2, A_1', A_2')
 $$
 
 is determined solely by which profile has the larger value of $A_2$. Ties are broken at random.
@@ -868,14 +904,14 @@ $$
 =
 \sum_{A_2, A_1', A_2'}
 \Big[
-Y\big((1, A_2), (A_1', A_2')\big)
+Y(1, A_2, A_1', A_2')
 -
-Y\big((0, A_2), (A_1', A_2')\big)
+Y(0, A_2, A_1', A_2')
 \Big]
 \, p(A_2, A_1', A_2').
 $$
 
-where $p(A_2, A_1', A_2')$ is the joint distribution of attributes for $A$ and $B$ (other than $A_1$).
+where $p(A_2, A_1', A_2')$ is the joint distribution of attributes for candidates 1 and 2 (other than $A_1$).
 
 The ATE is
 
@@ -884,9 +920,9 @@ $$
 = \mathbb{E}\left[
 \sum_{A_1', A_2'}
 \Big[
-Y\big((1, A_2(1)), (A_1', A_2')\big)
+Y(1, A_2(1), A_1', A_2')
 -
-Y\big((0, A_2(0)), (A_1', A_2')\big)
+Y(0, A_2(0), A_1', A_2')
 \Big]
 \, p(A_1', A_2')\right].
 $$
@@ -896,7 +932,7 @@ where the expectation is taken over responses of $A_2$ to $A_1$---that is, acros
 There is no expectation  across voters in either expression because I have simplified things by assuming all voters are identical. 
 
 
-The AMCE is computed by comparing changes in $A_1$ for candidate A, holding $A_2$ fixed, across all possible profiles of candidate B. In this case, regardless of the values of $A_2$ or of the rival's attributes, the effect of $A_1$ is 0 and so the AMCE is 0 (regardless of the correlation structure $p$). 
+The AMCE is computed by comparing changes in $A_1$ for candidate 1, holding $A_2$ fixed, across all possible profiles of candidate 2. In this case, regardless of the values of $A_2$ or of the rival's attributes, the effect of $A_1$ is 0 and so the AMCE is 0 (regardless of the correlation structure $p$). 
 
 
 
@@ -910,36 +946,44 @@ $$
 \text{AMCE}_2 = 0.5.
 $$
 
-This arises because, depending on the other candidate's attribute, a change in  $A_2$ either takes you from a loss to a toss up or from a toss up to a win.
+This arises because, depending on the other candidate's attribute, a change in $A_2$ either takes you from a loss to a toss up or from a toss up to a win.
 
 How about the ATE? 
 
-In World 1, changing $A_1$ may induce changes in $A_2$. Taking the distribution of profiles for candidate B as given, a change in A1 produces a change in the probability of support of 0.3 *regardless* of the other candidates attributes. This is the effect of $A_1$ on $A_2$ times the effect of $A_2$ on $Y$.
- This is less obvious to see byt the Table below lays out the calculations explicitly.
+In World 1, changing $A_1$ may induce changes in $A_2$. Taking the distribution of profiles for candidate 2 as given, a change in $A_1$ produces a change in the probability of support of 0.3 *regardless* of the other candidates' attributes. This is the effect of $A_1$ on $A_2$ times the effect of $A_2$ on $Y$.
+This is less obvious to see but @tbl-ate-world1 lays out the calculations explicitly.
 
-**Table A2: ATE comparisons for $A_1$ in World 1**
+```{r}
+#| label: tbl-ate-world1
+#| echo: false
+#| tbl-cap: "ATE comparisons for $A_1$ in World 1"
 
-| Rival | p    | Comparison                                        | Diff  |
-|-------|------|-----------------------------------------|-------|
-| (0,0) | 0.4  | $.6 (\Pr(U(1,1) > U(0,0)) - \Pr(U(0,0) > U(0,0)) ) +$ |  .3   |
-|       |      | $.2 (\Pr(U(1,1) > U(0,0)) - \Pr(U(0,1) > U(0,0)) ) +$ |       |
-|       |      | $.2 (\Pr(U(1,0) > U(0,0)) - \Pr(U(0,0) > U(0,0)) )$   |       |
-| (0,1) | 0.1  | $.6 (\Pr(U(1,1) > U(0,1)) - \Pr(U(0,0) > U(0,1)) ) +$ |  .3   |
-|       |      | $.2 (\Pr(U(1,1) > U(0,1)) - \Pr(U(0,1) > U(0,1)) ) +$ |       |
-|       |      | $.2 (\Pr(U(1,0) > U(0,1)) - \Pr(U(0,0) > U(0,1)) )$   |       |
-| (1,0) | 0.1  | $.6 (\Pr(U(1,1) > U(1,0)) - \Pr(U(0,0) > U(1,0)) ) +$ |  .3   |
-|       |      | $.2 (\Pr(U(1,1) > U(1,0)) - \Pr(U(0,1) > U(1,0)) ) +$ |       |
-|       |      | $.2 (\Pr(U(1,0) > U(1,0)) - \Pr(U(0,0) > U(1,0)) )$   |       |
-| (1,1) | 0.4  | $.6 (\Pr(U(1,1) > U(1,1)) - \Pr(U(0,0) > U(1,1)) ) +$ |  .3   |
-|       |      | $.2 (\Pr(U(1,1) > U(1,1)) - \Pr(U(0,1) > U(1,1)) ) +$ |       |
-|       |      | $.2 (\Pr(U(1,0) > U(1,1)) - \Pr(U(0,0) > U(1,1)) )$   |       |
+tab <- data.frame(
+  Rival = c("(0,0)", "", "", "(0,1)", "", "", "(1,0)", "", "", "(1,1)", "", ""),
+  p = c("0.4", "", "", "0.1", "", "", "0.1", "", "", "0.4", "", ""),
+  Comparison = c(
+    "$.6 (\\Pr(U(1,1) > U(0,0)) - \\Pr(U(0,0) > U(0,0)) ) +$",
+    "$.2 (\\Pr(U(1,1) > U(0,0)) - \\Pr(U(0,1) > U(0,0)) ) +$",
+    "$.2 (\\Pr(U(1,0) > U(0,0)) - \\Pr(U(0,0) > U(0,0)) )$",
+    "$.6 (\\Pr(U(1,1) > U(0,1)) - \\Pr(U(0,0) > U(0,1)) ) +$",
+    "$.2 (\\Pr(U(1,1) > U(0,1)) - \\Pr(U(0,1) > U(0,1)) ) +$",
+    "$.2 (\\Pr(U(1,0) > U(0,1)) - \\Pr(U(0,0) > U(0,1)) )$",
+    "$.6 (\\Pr(U(1,1) > U(1,0)) - \\Pr(U(0,0) > U(1,0)) ) +$",
+    "$.2 (\\Pr(U(1,1) > U(1,0)) - \\Pr(U(0,1) > U(1,0)) ) +$",
+    "$.2 (\\Pr(U(1,0) > U(1,0)) - \\Pr(U(0,0) > U(1,0)) )$",
+    "$.6 (\\Pr(U(1,1) > U(1,1)) - \\Pr(U(0,0) > U(1,1)) ) +$",
+    "$.2 (\\Pr(U(1,1) > U(1,1)) - \\Pr(U(0,1) > U(1,1)) ) +$",
+    "$.2 (\\Pr(U(1,0) > U(1,1)) - \\Pr(U(0,0) > U(1,1)) )$"
+  ),
+  Diff = c(".3", "", "", ".3", "", "", ".3", "", "", ".3", "", "")
+)
 
+kable(tab, format = "latex", booktabs = TRUE, escape = FALSE) |>
+  kable_styling(latex_options = "striped")
+```
 
-In World 2, changing $A_1$ does not affect $A_2$. Table A3 reports the resulting comparisons.
+In World 2, changing $A_1$ does not affect $A_2$. The resulting comparisons show that $\text{ATE}_1^{\text{World 2}} = 0$.
 
-$$
-\text{ATE}_1^{\text{World 2}} = 0.
-$$
 
 
 Hence the AMCE coincides with the ATE in World 2 but not in World 1. The difference arises because, in World 1, changing one attribute causally affects another attribute that voters care about.
@@ -947,7 +991,7 @@ Hence the AMCE coincides with the ATE in World 2 but not in World 1. The differe
 
 # Conclusion
 
-The issue here is not unique to conjoints of course. It arises also in *audit experiments*---such as that studied in @fang, in which myriad features of fictional individuals are assigned independently. Doing so makes sense if our interest is indeed on different types of discrimination rather than the effects of "being" from one group or another. Since for this we may be specifically interested in the effect of a feature --- such as race, on responses --- conditional not just on possible confounders but on  post-treatment features also. 
+The issue here is not unique to conjoints of course. It arises also in *audit experiments*---such as that studied in @fang, in which myriad features of fictional individuals are assigned independently. Doing so makes sense if our interest is indeed on different types of discrimination rather than the effects of "being" from one group or another. Since for this we may be specifically interested in the effect of a feature---such as race, on responses---conditional not just on possible confounders but on post-treatment features also. 
 
 
 

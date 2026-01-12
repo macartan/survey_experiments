@@ -541,6 +541,13 @@ The intuition is that when they see privilege but no wealth they are confident t
 
 # Mapping from estimates from survey experiments to real world estimands 
 
+## The challenge of well defined estimands
+
+@vanderweele2018well discusses when causal estimands are well defined (see also @vanderweele2013causal on multiple versions of a treatment)
+
+
+
+
 ## The prime mapping
 
 

@@ -1042,11 +1042,11 @@ That makes lots of sense in principle. In practice I think sometimes we see peop
 
  
 
-# List experiments {#sec:list}
+## List experiments {#sec:list}
 
 List experiments might also be done for either reason, but the typical use is for descriptive inference.
 
-## A list experiment conducted for descriptive inference.
+### A list experiment conducted for descriptive inference.
 
 You are interested in whether people think there is corruption ($K$) or not. In principle this is measurable, but it is hard to measure. You vary whether there is a long list or short list ($X$) and infer from the effects on the count answers ($Y$) whether people think there is corruption or not. You are primarily interested in $K$; there is no independent interest here in how list length affects answer except for its role for descriptive inference.
 

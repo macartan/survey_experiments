@@ -1,0 +1,489 @@
+---
+title: "Three confusions in the use and interpretation of survey experiments"
+author: Macartan Humphreys
+date: 1 January 2026
+bibliography: bib.bib
+format: 
+  revealjs:
+    number-sections: true
+    embed-resources: true
+---
+
+
+```{r}
+#| label: setup
+#| include: false
+
+library(CausalQueries)
+library(tidyverse)
+library(DeclareDesign)
+library(tidyr)
+library(knitr)
+library(kableExtra)
+boxed <- theme(
+  panel.border = element_rect(colour = "black", fill = NA, linewidth = 0.6)
+)
+
+plot2 <- function(...) plot_model(..., nodecol = "white", textcol = "black")
+```
+
+
+
+# Overview
+
+* Confusion over whether the goal is descriptive or causal estimands
+* Confusion over of what controls achieve and how they alter inferences
+* COnfusion over admissable inferences to real world effects
+
+
+# Descriptive or causal estimands
+
+## Different goals across different types of survey experiment {.smaller}
+
+Two extreme examples:
+
+*  survey experiment for **causal inference**: **information experiment**.  
+  
+    * typically used for causal inference, not descriptive inference, whether or not they are delivered through a survey.
+    * can be almost indistinguishable from field experiments 
+
+* survey experiment clearly used for **descriptive inference**: the **randomized response** survey experiments. 
+
+   * goal is to estimate the prevalence of some property of subjects, such as whether people have engaged in illegal behavior. 
+   * there is a causal effect of the procedure on the answer, but the purpose is to make descriptive inferences about something else.  
+
+
+## Different goals across different types of survey experiment {.smaller}
+
+```{r}
+#| label: tbl-survey-experiments
+#| echo: false
+#| tbl-cap: "Summary of different uses for survey experiments"
+
+
+tab <- data.frame(
+`Survey Experiment Type` = c(
+"Priming experiments",
+"List experiments",
+"Framing experiments",
+"Conjoints"
+),
+`Causal Inference Use Case` = c(
+"Estimate effect of prime on behavior/attitudes (typical)",
+"Estimate effect of list length or content on response patterns (rare)",
+"Estimate effect of politician framing on voter choices (common)",
+"Estimate effect of feature on choices, given a distribution of other fixed features (rare?)"
+),
+`Descriptive Inference Use Case` = c(
+"Use prime as diagnostic to infer knowledge/beliefs (rarer)",
+"Infer prevalence of sensitive beliefs/behaviors (typical)",
+"Infer underlying preference purged of framing effects (common)",
+"Make inferences about preferences, classification rules, or ideal points (typical?)"
+),
+Traps = c(
+"Confusing the effect of the prime with the effect of the thing being primed. For example thinking you are finding the effects of exposure to violence by reminding people about past exposure.",
+"Using an experiment for a descriptive quantity might mean accepting too much error in order to reduce bias.",
+"",
+"Confusing the effects of a controlled change in question wording with the effects of intervening on the thing itself. For example thinking you are finding the effects of regime type on willingness to go to war or a candidate's gender on their vote share."
+),
+check.names = FALSE
+)
+
+kable(
+  tab[, -4],
+  booktabs = TRUE,
+  longtable = TRUE,
+  escape = FALSE
+) 
+```
+
+
+## Are preferences properties or effects? {.smaller}
+
+
+```{r}
+#| label: fig-prefs-features
+#| echo: false
+#| fig-width: 8
+#| fig-height: 2
+#| fig-align: center
+#| fig-cap: "A model in which preferences and features jointly determine choices. Learning about the effect of features on choices lets you make inferences about preferences."
+
+make_model("Features -> Choices <- Preferences") |> 
+  plot2() + ggplot2::coord_cartesian(clip = "off")
+```
+
+## Are preferences properties or effects? {.smaller}
+
+Three arguments for the properties interpretation:
+
+* Choices are not actually made and utility is not actually realized: the effect is a thin one---the effect of questions on answers
+* Coherence: Profiles are constituted by their attributes: we cannot assess the effects of changing attributes without changing  the unit itself
+* More transportable: If we understand preferences we might make claims about how people would react in different situations 
+
+
+# The role of controls {.smaller}
+
+## Estimands {.smaller}
+
+```{r fig-attr-info-belief-dag, fig.cap="DAG for attributes ($A_1,A_2$), information ($I_1,I_2$), beliefs ($B_1,B_2$), and outcome ($Y$).", echo = FALSE, fig.height = 3, fig.width = 8}
+
+labs <- c("A[1]", "A[2]", "U", "I[1]", "I[2]", "B[1]", "B[2]", "Y")
+
+m <- make_model(
+  "I1 <- A1;   I2 <- A2;
+   I2 -> B1 <- I1;   I1 -> B2 <- I2;
+   Y  <- B1;   Y  <- B2; B1 <-  U ->  B2",
+  add_causal_types = FALSE
+)
+
+plot_model(
+  m,
+  labels  = labs,
+  parse   = TRUE,
+  textcol = "black",
+  nodecol = "white",
+  x_coord = c(1, 1, 3, 2, 2, 3, 3, 4),
+  y_coord = c(2, 1, 1.5, 2, 1, 2, 1, 1.5)
+) +
+  ggplot2::coord_cartesian(clip = "off")
+```
+
+
+## Estimands  {.smaller}
+
+
+```{r tab:estimands, echo = FALSE}
+
+estimands <- data.frame(
+  Name = c(
+    "1. Attribute effect",
+    "2. Information effect",
+    "3. Belief effect",
+    "4. Conditional information effect",
+    "5. Conditional belief effect",
+    "6. Controlled information effect",
+    "7. Controlled belief effect"
+  ),
+  Definition = c(
+    "$Y(A_1 = 1) - Y(A_1 = 0)$",
+    "$Y(I_1 = 1) - Y(I_1 = 0)$",
+    "$Y(B_1 = 1) - Y(B_1 = 0)$",
+    "$Y(I_1 = 1, I_2) - Y(I_1 = 0, I_2)$",
+    "$Y(I_1 = 1, I_2) - Y(I_1 = 0, I_2)$",
+    "$Y(I_1 = 1, B_2) - Y(I_1 = 0, B_2)$",
+    "$Y(B_1 = 1, B_2) - Y(B_1 = 0, B_2)$"
+  ),
+  ShortDescription = c(
+    "Total effect of attribute $A_1$ on $Y$ through information and beliefs (including spillovers via $B_2$).",
+    "Total effect of information $I_1$ on $Y$, via $B_1$ and induced changes in $B_2$.",
+    "Total effect of belief $B_1$ on $Y$, allowing correlation with $B_2$.",
+    "Effect of $I_1$ on $Y$ given $I_2$.",
+    "Effect of $B_1$ on $Y$ given $I_2$.",
+    "Effect of $I_1$ on $Y$, with $B_2$ held constant.",
+    "Effect of $B_1$ on $Y$, with $B_2$ held constant."
+  ),
+  Identified = c("", "Yes", "", "Yes", "", "", ""),
+  stringsAsFactors = FALSE
+)
+
+kable(
+  estimands[, -3],
+  booktabs = TRUE,
+  escape = FALSE,
+  col.names = c(
+    "Name",
+    "Definition",
+#     "Short description",
+    "Identified"
+  ),
+  caption = "Estimands researchers might be interested in"
+) 
+```
+
+
+## Bias for information effects is achieved through randomization not through controls {.smaller}
+
+The second and fourth estimands are  directly targeted by a conjoint experiment. 
+
+* the types of confounding that the experiment addresses might include the joint assignment of treatments---for example whenever information is given about democracy, information is also provided about wealth (not simply "*inferences are made about wealth*"), or 
+* self-selection into treatment: subjects that are more supportive of a particular type of candidate are more likely to receive one signal than another. 
+
+
+## Bias for beliefs is not addressed by controls {.smaller}
+
+*  @bell2018authoritarian: by "holding the military power of the target constant, we reduce the possibility of the respondents drawing inferences about the target's level of military power from the democracy treatment, which is perhaps the most obvious potential confounder."  
+ 
+* @dafoe2018information: "When IE [information equivalence] is violated, the effect of the manipulation need not correspond to the quantity of interest (the effect of beliefs about the focal attribute)" 
+
+
+
+## Information estimands depend on not just level but presence of controls {.smaller}
+
+Imagine a world in which there are only three relevant features, $A_1, A_2, A_3$ that combine to generate evaluation $Y$ of a candidate according to the law:
+
+
+$$
+Y = A_2 \times A_3.
+$$
+
+
+Joint distribution over $A_1, A_2$ and $A_3$:
+
+|                | $A_1=0$ | $A_1=1$ | 
+|---|---:|---:|
+| $A_2=0,\,A_3=0$ | $\frac{32}{16}$ | $\frac{8}{16}$ | 
+| $A_2=0,\,A_3=1$ | $\frac{27}{16}$ | $\frac{9}{16}$ | 
+| $A_2=1,\,A_3=0$ | $\frac{2}{16}$ | $\frac{18}{16}$ | 
+| $A_2=1,\,A_3=1$ | $\frac{6}{16}$ | $\frac{18}{16}$ | 
+| Total | $\frac{12}{16}$ | $\frac{4}{16}$ | $1$ |
+
+
+## Information estimands depend on not just level but presence of controls {.smaller}
+
+Then, recalling that $\Pr(Y=1) = \Pr(A_2=1 \& A_3=1)$ it is easy to check that:
+
+1. $\Pr(Y=1 | A_1=1) - \Pr(Y=1 | A_1=0) = \frac12 - \frac14 = 0.25$
+2. $\Pr(Y=1 | A_1=1 \& A_2=1) - \Pr(Y=1 | A_1=0 \& A_2=1) = \frac12 - \frac34 = -0.25$
+3. $\Pr(Y=1 | A_1=1 \& A_2=1\& A_3=1) - \Pr(Y=1 | A_1=0 \& A_2=1\& A_3=1) = 0$.
+
+
+* **Colliders**: Also possible to show that introducing a control creates an effect of an attribute on a judgement even if the subject does not believe that the factor is causally  relevant for the judgement.
+
+
+## Including controls does not reduce uncertainty {.smaller}
+
+
+Say for all individuals 
+
+* $Y = A_1A_2$ where $A_1$ and $A_2$ are beliefs about features of candidates and $Y$ is an evaluation. 
+* $A_2$ has a known distribution, say 50% of the population of candidates is male and this is known to all individuals. 
+
+Then, if no information on $A_2$ is provided the variance of estimates of the effect of $A_1$ is lower than when it is provided.
+
+
+## Controlled direct effects and taste-based discrimination {.smaller}
+
+@boittin2024evidence suggest that discrimination *after* controlling for criminality suggests taste based discrimination (though they consider other possibilities also). @ono2019contingent argue that controlling for other features lets them assess taste based discrimination.  @olinger2024americans make a similar argument for their study of doctor selection as a function of race.
+
+Threat: this invoves post treatmtent controlling. If one supplies enough downstream attributes you can make any direct effect disappear: whether there is taste based discrimination depends entirely on teh controls
+
+
+## We cannot recover mental models {.smaller}
+
+
+
+```{r}
+#| label: fig-mental
+#| echo: false
+#| fig-width: 13
+#| fig-height: 10
+#| out-width: 80%
+#| fig-align: center
+#| fig-cap: "Top row shows three mental models in which three attributes (privilege, wealth, ability) combine in different ways to produce quality.  Bottom row shows relations between signals,  beliefs, and evaluations,  when signals are  provided for  two of the three attributes only. Signals for an attribute directly affect beliefs about that attribute (not shown), but may also affect beliefs about other attributes for which a signal is not provided.  Confounding or collider bias can render a *signal* of a feature relevant to assessments even though---in the individual's mental model of the world---the feature itself does not affect assessments."
+
+model1a <- make_model("Privilege -> Quality <- Wealth; Ability -> Quality") 
+model1b <- make_model("PrivilegeI ->  Quality <- WealthI; Quality <- Ability") 
+
+model2a <- make_model("Privilege -> Quality <- Wealth; Ability -> Quality; Wealth <-> Ability") 
+model2b <- make_model("PrivilegeI ->  Quality <- WealthI; Quality <- Ability <- WealthI") 
+
+model3a <- make_model("Privilege -> Wealth <- Ability -> Quality") 
+model3b <- make_model("PrivilegeI -> AbilityB; WealthI -> AbilityB -> QualityB") 
+
+xs <- c(1, -1, 2, 0)
+ys <- c(2, 1, 0, 1)
+
+
+
+plot1a <- model1a |> plot2(x_coord = xs[c(1, 2, 4, 3)], 
+                           y_coord = ys[c(1, 2, 4, 3)]) + 
+  ggplot2::coord_cartesian(clip = "off") + ggtitle("Mental model 2")
+
+
+plot1b <- 
+  model1b |> plot_model(
+    x_coord = xs[c(1, 2, 4, 3)],
+    y_coord = ys[c(1, 2, 4, 3)],
+    nodecol = "white", textcol = "black",
+    labels = c(
+               "Beliefs\nabout ability",
+               "Information\non privilege",
+               "Information\non wealth",
+               "Beliefs\nabout quality")
+) + 
+  ggplot2::coord_cartesian(clip = "off") + ggtitle("Beliefs implied by mental model 2")
+
+plot2a <- model2a |> plot2(x_coord = xs[c(1, 2, 4, 3)], 
+                           y_coord = ys[c(1, 2, 4, 3)]) + 
+  ggplot2::coord_cartesian(clip = "off") + ggtitle("Mental model 2")
+
+
+plot2b <- 
+  model2b |> plot_model(
+    x_coord = xs[c(2, 4, 1, 3)],
+    y_coord = ys[c(2, 4, 1, 3)],
+    nodecol = "white", textcol = "black",
+    labels = c(
+               "Information\nabout privilege",
+               "Information\non wealth",
+               "Beliefs\non ability",
+               "Beliefs\nabout quality")
+) + 
+  ggplot2::coord_cartesian(clip = "off") + ggtitle("Beliefs implied by mental model 2")
+
+plot3a <- model3a |> plot2(x_coord = xs, y_coord = ys) + 
+  ggplot2::coord_cartesian(clip = "off") + ggtitle("Mental model 3")
+plot3b <- 
+  model3b |> plot_model(x_coord = xs[c(2, 4, 1, 3)], 
+                     y_coord = ys[c(2, 4, 1, 3)], 
+                     nodecol = "white", textcol = "black",
+                    labels = c("Information on\nprivilege",
+                               "Information on\nwealth",
+                               "Beliefs about\nability",
+                               "Beliefs about\nquality")) + 
+  ggplot2::coord_cartesian(clip = "off") + ggtitle("Beliefs implied by mental model 3")
+
+
+ggpubr::ggarrange(nrow = 2, ncol = 3, plot1a, plot2a, plot3a, plot1b, plot2b, plot3b)
+
+
+
+
+
+```
+
+
+# Mapping from estimates from survey experiments to real world estimands {#translation .smaller}
+
+
+Challenge: can we learn something about the **effect of gender on vote shares** from an experiment that assesses **the effect of a gender signal on reported willingness to vote**
+
+
+## Challenge 1: Maps to nowhere {.smaller}
+
+Observational counterparts to experimental estimands may not be well defined.
+
+
+* **Attributes as causes**. Holland argues most strongly that "attributes of units are never causes." His thinking is that if you change the attribute you are no longer talking about the same unit. Though he describes attributes he seems to have in mind features that are constitutive of the unit.  Would circles have such a low perimeter to area ratio if they had corners? Or to modify an example in @rubin2005causal, would Trump have won the election if he were born yesterday in the Arctic). 
+
+* **SUTVA** violations. The second threat is, I think, more common. The second component of the "stable unit treatment value assumption" (SUTVA) is that there are no hidden versions of treatments. What's the effect of having an even number of parties taking part in government negotiations? The problem here is that there are many different ways that the treatment condition could be met, with different implications. 
+
+* **Exclusion restriction.** The third challenge is if the levers we can imagine to modify a feature inevitably induce effects of their own on outcomes.  The difficulty contemplating the effect of a change in one feature without necessarily inducing a change in another. Let's imagine that we have a version of the gender treatment in mind: how would Trump have fared in the 2020 election if, from 2018, say, he had been a woman. Equivalently: had he changed gender at some point.
+
+
+
+## Challenge 2: Licence to export {.smaller}
+
+
+
+**A1. Causal autonomy of attributes.**   Intuitively, an intervention on an attribute does not causally affect other attributes. Attributes may of course be arbitrarily correlated with each other.
+
+**A2. Sovereignty.**  Implicitly, votes translate directly into vote shares. This is trivial if understood definitionally. However if $v$ is understood as the *reported* vote share then this may be considered a "no misreporting" condition. 
+
+**A3. Sincere (rational, but nonstrategic) voting.**   Implicitly: voters do not abstain---regardless of $a$, they vote their top preferences. 
+
+**A4. Context irrelevance given attributes.** Features that give rise to different attributes---one might imagine, cultural features for instance---do not themselves determine preferences. 
+   
+**A5. Signals are complete mediators.**  Signals affect preferences in the same way as attributes themselves would.
+
+**A6. Aligned distributions.**  The attribute distribution assumed in the ACME definition aligns with the induced attribute in the context, given interventions.
+
+
+## Challenge 2: Licence to export {.smaller}
+
+
+**Claim.** *Given a population of voters $N = [0,1]$, if conditions A1–A6 hold, then the expected effect of a change in an attribute over contexts on vote shares of a candidate  ($\beta$) equals the expected effect of a change in signals of that attribute on expressed preferences, conditional on other information (AMCE).*
+
+
+
+## Easy and hard cases {.smaller}
+
+For an example of a structure under which equivalence might hold,  consider a causal model like that shown in @fig-simple.
+
+```{r}
+#| label: fig-simple
+#| echo: false
+#| fig-width: 10
+#| fig-height: 8
+#| fig-cap: "DAG showing relation between two features, $A_1$ and $A_2$, an unobservable feature $U$, two *signals* about these observable features $s_{1}$ and $s_{2}$, respondent *beliefs* about these features $\\mu_{1}$ and $\\mu_{2}$, and a respondent level (relative) evaluation, $Y$, and a vote choice. A survey experimentalist intervenes on $s_{1}$ and $s_{2}$. Can they make inferences about the effect of $A_1$ and $A_2$ on $V$? Left model shows a promising case. Right model highlights a set of threats."
+
+
+labs <- c("U", "A[1]",  "A[2]", 
+          "s[A[1]]",  "s[A[2]]", 
+          "mu[A[1]]",  "mu[A[2]]", 
+          "'Y: Relative evaluation'", "'V: Vote'")
+
+labs2 <- c("U", "A[2]",  "A[1]", 
+          "s[A[2]]",  "s[A[1]]", 
+          "mu[A[2]]",  "mu[A[1]]", 
+          "'Y: Relative evaluation'", "'V: Vote'")
+
+
+model1 <- make_model("Y <- BP <- SP <- P;  C -> SC -> BC -> Y;
+ P <-U -> C; Y -> V",
+                    add_causal_types = FALSE)
+
+model2 <- make_model("Y <- BP <- SP <- P -> C -> SC -> BC -> Y;
+                    SP -> BC;   P <-U -> C;
+                    Y -> V <- P",
+                    add_causal_types = FALSE)
+
+ggpubr::ggarrange(nrow = 1, ncol = 2,
+
+plot_model(model1, 
+           labels = labs,            
+           textcol = "black",           nodecol = "white", parse = TRUE,
+           x_coord = c(3, 1, 4, 1, 4, 1, 4, 2, 3),
+           y_coord = c(5, 4, 3, 2, 2, 1, 1, 0, -1)) +
+  ggplot2::coord_cartesian(clip = "off") +
+  boxed, 
+
+plot2(model2,
+      labels = labs,
+      parse = TRUE,
+           x_coord = c(3, 1, 4, 1, 4, 1, 4, 2, 3),
+           y_coord = c(5, 4, 3, 2, 2, 1, 1, 0, -1)) + 
+  ggplot2::coord_cartesian(clip = "off")   + 
+  ggplot2::geom_text(
+    data = data.frame(
+            x = c(2.5,   2.5, 1.5),
+            y = c(3.35,  1.65, 3),
+            lab = c(1,2,3)),
+    ggplot2::aes(x = x, y = y, label = lab),
+    inherit.aes = FALSE
+  ) + 
+    boxed
+)
+
+
+```
+
+
+## Three threats to these inferences {.smaller}
+
+1. Causal relations between attributes
+2. Cross attribute updating 
+3. Direct behavioral effects
+
+Each of these threats is captured by a marked arrow in the modified DAG below.
+
+
+
+# Conclusion {.smaller}
+
+We are at risk of thinking we are getting more out of experiments than we are.
+
+* If we know we are interested in descriptive estimands, then experimentation may not be necessary and may be costly
+* If we are interested in causal estimands we need to be clear about which one:  
+  * controls affect the estimand targeted 
+  * even with controls we should *not* expect that the experiment identifies the effects of beliefs , only the effect of the signal itself: the effect of a question wording on an answer
+* License for claims about actual attributes is only available under very limited conditions
+
+
+
+\newpage
+
+# References
+
+

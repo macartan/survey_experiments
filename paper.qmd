@@ -536,7 +536,7 @@ Two distinct interpretative risks arise in this setting.
 
 First there is risk of interpreting the estimand as "actual" rather than "possible" taste based discrimination. When fixing downstream conditions exogeneously researchers are estimating controlled rather than "natural" estimands. To see the difference, imagine an employer values employees if they are high skilled *or* if they are male. And otherwise do not value them. They also think that everyone is high skilled. For such a person learning that someone is male or female never *in fact* makes a difference (regardless of the actual distribution of skills in the world). They engage in no "taste based" discrimination and so in this simple set up the "natural direct effect" of gender is 0. However the "controlled direct effect" of gender is 1 conditional on low skill. Controlling helps uncover a feature of preferences and of possible discrimination, not actual discrimination.  Mapping back to actual discrimination requires information about what the employers would believe under different conditions.
 
-Second there is a risk of inadvertent over control. The fact that downstream controls, in the sense provided in assumption 1 are  easy in a survey context raises the risk that controlled effects are returned when conditional effects, or even simple average effect are sought/ Similarly it is possible that estimands are defined with too much control. If in effect we are estimating a set of controlled direct effects then we learn little about average effects. Moreover what we do learn about -- direct effects -- depends, again, critically on what is controlled for. Controlling for employment or networks when assessing the effects of migration backgrounds, when these things are more normally inferred from information on migration background, then moves the estimand to a controlled effect, remove in effect channels through which information about migration might usually operate.  For a type of reductio, if we imagine that the effect of any attribute works via beliefs about downstream features, then by controlling these features we can send the effects of the attribute to zero. If we think "taste" effects work through particular channels: disgust, affection, beliefs about integrity or piousness---then the ability to control for these (normally downstream) mediators would remove direct effects entirely.
+Second there is a risk of inadvertent over control. The fact that downstream controls, in the sense provided in assumption 1 are  easy in a survey context raises the risk that controlled effects are returned when conditional effects, or even simple average effect are sought/ Similarly it is possible that estimands are defined with too much control. If in effect we are estimating a set of controlled direct effects then we learn little about average effects. Moreover what we do learn about -- direct effects -- depends, again, critically on what is controlled for. Controlling for employment or networks when assessing the effects of migration backgrounds, when these things are more normally inferred from information on migration background, then moves the estimand to a controlled effect, remove in effect channels through which information about migration might usually operate.  It is not hard to imagine, moreover, that the controlled effect could ultimately be thin soup. In a line of dominos, each having a unit effect on the fall of the final domino, only the second last domino has a non zero controlled direct effect.  For a type of reductio, if we imagine that the effect of any attribute works via beliefs about downstream features, then by controlling these features we can send the effects of the attribute to zero. If we think "taste" effects work through particular channels: disgust, affection, beliefs about integrity or piousness---then the ability to control for these (normally downstream) mediators would remove direct effects entirely.
 
 
 
@@ -876,24 +876,8 @@ Although in a conjoint we can ensure that there are no causal relations between 
 
 From the graph one can see that this matters because the effect of a change in $A_1$ is not captured anymore by the effect of a change in $s_{1}$, even if we allow for $A_1$ and $A_2$ to be arbitrarily correlated. 
 
-Rather we would need to set our sights on some form of controlled direct effect of $A_1$ on $Y$, blocking the effects that run through $A_2$. How meaningful this estimand is surely depends on the case. And it can depend sharply on the set of attributes that happen to be included in the experiment. It is not hard to imagine, moreover, that the controlled effect could ultimately be thin soup. In a line of dominos, each have a unit effect on the fall of the final domino, only the second last domino has a non zero controlled direct effect. More sharply: one could make any controlled direct effect "vanish" by inclusion of features that lie on all pathways from the node to the outcome.
 
-To me this feature of endogenous relations between attributes seems to raise a tremendous obstacle to making claims from conjoints about the effects of attributes in the world. 
-
-### Cross signal updating {#sec-cross-signal} 
-
-We now do not impose that beliefs for a given feature are a function of information on that feature only, reflecting the possibility that individuals can update using all information. Particularly salient in this context is the possibility that when no signal is provided about some feature, individuals might nevertheless update on that feature based on information on other features. This is an old idea, found in  @anderson1971integration and  @von1975multi for instance and follows from standard Bayesian logic: if I learn about your profession but not your gender I may nevertheless update on both.  
-
-@acharya2018analyzing discuss this possibility in the context of conjoint experiments, highlighting how updating on other features can be part of the mechanism through which a signal of a given feature operates (see also @dafoe2018information on "information equivalence"; as well as discussion of this issue in the context of the use of names in audit type experiments @landgrave2022name and recent work by Abramson and Gillespie (nd)).
-
-### Direct behavioral effects {#sec-direct-behavioral} 
-
-Finally it is easy to see that attributes can have effects on behavior that arises not just through preferences but through other channels. For instance a powerful candidate might be more likely to get votes because they can intimidate voters or because they can deliver material benefits. Of course a conjoint might measure intended behavior and not just preferences; this is not resolve the problem since attributes might  drive a wedge between anticipated behavior and actual behavior, just as it could do between preferences and behavior. 
-
-
-
-
-## Numerical example {#sec-numerical}
+This feature of endogenous relations between attributes seems to raise a tremendous obstacle to making claims from conjoints about the effects of attributes in the world. 
 
 To illustrate the effects of a violation of A1, let's assume that A2 - A6 hold. In addition lets optimistically assume both of two attributes for two candidates are observed, all voters have identical preferences (this simplifies the estimand and makes it clearer what variation is doing work), and we know not only the joint distribution of attributes and the average effects of all attributes on each other, but also the underlying response functions giving rise to these average effects (this simplifies calculations of the ATE)
 
@@ -990,6 +974,21 @@ In World 2, changing $A_1$ does not affect $A_2$. The resulting comparisons show
 
 
 Hence the AMCE coincides with the ATE in World 2 but not in World 1. The difference arises because, in World 1, changing one attribute causally affects another attribute that voters care about.
+
+
+### Cross signal updating {#sec-cross-signal} 
+
+We now do not impose that beliefs for a given feature are a function of information on that feature only, reflecting the possibility that individuals can update using all information. Particularly salient in this context is the possibility that when no signal is provided about some feature, individuals might nevertheless update on that feature based on information on other features. This is an old idea, found in  @anderson1971integration and  @von1975multi for instance and follows from standard Bayesian logic: if I learn about your profession but not your gender I may nevertheless update on both.  
+
+@acharya2018analyzing discuss this possibility in the context of conjoint experiments, highlighting how updating on other features can be part of the mechanism through which a signal of a given feature operates (see also @dafoe2018information on "information equivalence"; as well as discussion of this issue in the context of the use of names in audit type experiments @landgrave2022name and recent work by Abramson and Gillespie (nd)).
+
+### Direct behavioral effects {#sec-direct-behavioral} 
+
+Finally it is easy to see that attributes can have effects on behavior that arises not just through preferences but through other channels. For instance a powerful candidate might be more likely to get votes because they can intimidate voters or because they can deliver material benefits. Of course a conjoint might measure intended behavior and not just preferences; this is not resolve the problem since attributes might  drive a wedge between anticipated behavior and actual behavior, just as it could do between preferences and behavior. 
+
+
+
+
 
 
 # Conclusion {#sec-conclusion}

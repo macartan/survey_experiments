@@ -1,5 +1,5 @@
 ---
-title: "Let's take the con out of conjoint experiments"
+title: "Three risks in the design and interpretation of conjoint experiments"
 author: Macartan Humphreys
 date: 1 January 2026
 bibliography: bib.bib
@@ -17,7 +17,7 @@ format:
     number-sections: true
     code-fold: true
     linkcolor: darkorange
-abstract: "There has been an explosion in the use of survey experiments in political science and related disciplines. But oftentimes there is also concomitant confusion regarding what the goal of a survey experiment is. Focusing especially on conjoint survey experiments, I highlight three points of confusion and provide pointers to clarify the targets of inference. The first relates to the nature of the estimand: whether the experiment aims at a causal estimand, or rather uses causal inference techniques instrumentally to target a descriptive estimand. The goal has implications for the optimal design. The second relates to the use of controls and how inferences hinge critically not just on the distribution of values of controls but on which controls are included, to the point of making all but the most modest causal inferences fraught. The third relates to the license for common claims that survey experiments capture the effects of features of the world, rather than the effects of communications about possible states of the world. In the case of conjoint experiments, for instance, there is interest in understanding the effects of candidate *attributes* on vote shares, for instance, rather than simply the effects of *signals* (within a bundle of signals) on reported preferences or hypothetical choices. I identify conditions that justify this inference from micro to macro estimands, but they are extremely restrictive even when the experimental design closely mimics the features of target elections."    
+abstract: "There has been an explosion in the use of survey experiments in political science and related disciplines. But oftentimes there is also concomitant confusion regarding what the goal of a survey experiment is and whether survey experiments can achieve that goal. Focusing especially on conjoint survey experiments, I highlight three interpretative risks. The first relates to the nature of the estimand: whether the experiment aims at a causal estimand, or rather uses causal inference techniques instrumentally to target a descriptive estimand. The goal has implications for the optimal design. The second relates to the use of controls and how inferences hinge critically not just on the distribution of values of controls but on which controls are included, to the point of making all but the most modest causal inferences fraught. The third relates to the license for common claims that survey experiments capture the effects of features of the world, rather than the effects of communications about possible states of the world. I identify conditions that justify this inference from micro to macro estimands, but they are extremely restrictive even when the experimental design closely mimics the features of target elections."    
 ---
 
 ```{r}
@@ -173,7 +173,7 @@ kable(
 
 I use question marks in the last row because I am confused on what some of these are trying to do (see examples below). 
 
-The next section unpack the ideas in this table for the case of conjoint experiments. In the Appendices I discuss other types of survey experiments.
+The next section unpacks the ideas in this table for the case of conjoint experiments. In the Appendices I discuss other types of survey experiments.
 
 
 ## Conjoints {#sec-conjoints}
